@@ -10,16 +10,16 @@ class Game:
     gameIsRunning = True
 
     currentInput = ''
-
     dungeon = dungeon.Dungeon(player)
 
     # Main game loop
-    while gameIsRunning == True:
-        currentInput = player.inputManager.GetInput()
+    def GameLoop(self):
+        while self.gameIsRunning:
+            currentInput = self.player.inputManager.GetInput()
 
-        # Quit game
-        if currentInput == "exit":
-            gameIsRunning = False
+            # Quit game
+            if currentInput == "exit":
+                self.gameIsRunning = False
 
 
 
