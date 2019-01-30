@@ -8,7 +8,11 @@ class InputManager:
         self.dungeon = dungeon
 
         # Help text, should include commands and useful info.
-        self.helpText = "Help: Displays this help message. \nGo <direction>: Move to the room in this direction. Directions are North, East, South and West. \n"
+        self.helpText = "\n------------------------------------------------------------------\n" \
+                        "Help: Displays this help message. \n" \
+                        "Go <direction>: Move to the room in this direction. \n" \
+                        "<directon>: Directions are North, East, South and West. \n" \
+                        "------------------------------------------------------------------\n"
 
     def GetInput(self):
         newInput = input("Enter a command: ")
