@@ -28,7 +28,8 @@ class DefaultRooms:
     def __init__(self):
         self.Entrance = Room("Entrance", "You return to the entrance of the dungeon.",
                              "You are in a bare stone room with a door to the south. "
-                             "Old iron chains hang from the ceiling and clusters of mushrooms grow from cracks in the walls. \n",
+                             "Old iron chains hang from the ceiling and clusters of mushrooms grow from cracks in the walls. \n"
+                             "There is a small iron door to the South. \n",
                              south="Antechamber")
 
         self.Antechamber = Room("Antechamber", "You enter a large antechamber, statues line the walls.",

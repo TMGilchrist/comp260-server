@@ -9,8 +9,11 @@ Game class that holds important information for a game including the dungeon and
 """
 class Game:
 
-    #def __init__(self, dungeonName):
-
+    def __init__(self):
+        self.gameIsRunning = ''
+        self.currentInput = ''
+        self.player = ''
+        self.dungeon = ''
 
     def setup(self, dungeonName):
         self.gameIsRunning = True

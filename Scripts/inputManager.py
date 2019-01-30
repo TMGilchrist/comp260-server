@@ -11,7 +11,7 @@ class InputManager:
         self.helpText = "\n------------------------------------------------------------------\n" \
                         "Help: Displays this help message. \n" \
                         "Go <direction>: Move to the room in this direction. \n" \
-                        "<directon>: Directions are North, East, South and West. \n" \
+                        "<direction>: Directions are North, East, South and West. \n" \
                         "------------------------------------------------------------------\n"
 
     def GetInput(self):
@@ -26,15 +26,14 @@ class InputManager:
         splitInput = userInput.split(' ')
         command = splitInput[0]
 
-        if command == "help":
-            print(self.helpText)
-
-        # How to pass this back to game?
         if command == "exit":
             return "exit"
 
+        elif command == "help":
+            print(self.helpText)
+
         # Check for GO command.
-        if command == "go":
+        elif command == "go":
             if "north" in userInput:
                 self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "north")
 
@@ -47,8 +46,11 @@ class InputManager:
             elif "west" in userInput:
                 self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
 
-        if command == "look":
+        elif command == "look":
             print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
+
+        else:
+            print("No such command - Use 'help' to display a list of commands.")
 
 
 
