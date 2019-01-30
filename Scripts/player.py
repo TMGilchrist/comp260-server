@@ -10,7 +10,7 @@ class Player:
         self.inputManager = ''
         self.inventory = []
 
-    def setup(self, name, currentDungeon):
+    def Setup(self, name, currentDungeon):
         # Player's name. With multiple players this should be unique.
         self.name = name
 
@@ -23,7 +23,7 @@ class Player:
         # InputManager to handle typing
         self.inputManager = inputManager.InputManager(self, self.dungeon)
 
-    def checkInventory(self):
+    def CheckInventory(self):
 
         print("\n------------------------ \n"
               "Inventory: " + str(len(self.inventory)) + " items \n")
@@ -31,4 +31,4 @@ class Player:
         for item in self.inventory:
             print(" - " + item.name)
 
-        print("------------------------ \n")
+        print("------------------------")

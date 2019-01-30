@@ -4,7 +4,7 @@ from Scripts import item
 # A room in the Dungeon
 class Room:
 
-    def __init__(self, name, entryDescription, description, north="", east="", south="", west=""):
+    def __init__(self, name, entryDescription, description, items={}, itemPlacement={}, north="", east="", south="", west=""):
         # The room name, used to identify it when moving between rooms
         self.name = name
 
@@ -24,26 +24,32 @@ class Room:
         self.connections["south"] = south
         self.connections["west"] = west
 
-        self.gameItems = item.Items()
+        # A dictionary of any items in the room
+        self.items = items
 
-        # A list of any items in the room
-        # self.items = [item.Items.sword, item.Items.shield]
-        self.items = {"sword": self.gameItems.sword, "shield": self.gameItems.shield}
+        self.itemPlacement = itemPlacement
 
 
 # Pre-constructed rooms that can be added during testing.
 class DefaultRooms:
 
     def __init__(self):
+        # Get predefined items
+        self.gameItems = item.Items()
+
         self.Entrance = Room("Entrance", "You return to the entrance of the dungeon.",
                              "You are in a bare stone room with a door to the south. "
                              "Old iron chains hang from the ceiling and clusters of mushrooms grow from cracks in the walls. \n"
-                             "There is a small iron door to the South. \n",
+                             "There is a small iron door to the South.",
+                             items={"sword": self.gameItems.sword},
+                             itemPlacement={"sword": "There is a sword leaning against one wall."},
                              south="Antechamber")
 
         self.Antechamber = Room("Antechamber", "You enter a large antechamber, statues line the walls.",
                                 "You are in a large chamber with a vaulted ceiling supported by rows of pillars. There is a small iron door at the North end. "
-                                "On the Southern wall, an impressive set of bronze-banded double doors stands shut.\n",
+                                "On the Southern wall, an impressive set of bronze-banded double doors stands shut.",
+                                items={"shield": self.gameItems.shield},
+                                itemPlacement={"shield": "There is a shield behind one of the statues."},
                                 north="Entrance")
 
 

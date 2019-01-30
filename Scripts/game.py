@@ -27,13 +27,15 @@ class Game:
         self.dungeon.SetupDefaultRooms()
 
         # Do player setup including storing current dungeon
-        self.player.setup('NewCharacter', self.dungeon)
+        self.player.Setup('NewCharacter', self.dungeon)
 
     # Main game code
     def GameLoop(self):
         # Pre-game intro text
         print(self.dungeon.description)
-        print("\n" + self.dungeon.rooms[self.player.currentRoom].description + "\n")
+        # print("\n" + self.dungeon.rooms[self.player.currentRoom].description + "\n")
+
+        self.player.inputManager.Look()
 
         # Main game loop
         while self.gameIsRunning:

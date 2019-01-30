@@ -41,11 +41,11 @@ class Dungeon:
 
         # Check connection is valid
         if newRoomName != "":
-            print("\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription + "\n")
+            print("\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom
         else:
-            print("\nThere is nowhere to go in this direction. \n")
+            print("\nThere is nowhere to go in this direction.")
             return currentRoom
 
