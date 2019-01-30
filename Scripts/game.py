@@ -4,13 +4,17 @@ from Scripts import player
 from Scripts import dungeon
 
 
+"""
+Game class that holds important information for a game including the dungeon and the player. 
+"""
 class Game:
-    player = player.Player('NewCharacter')
 
-    gameIsRunning = True
-
-    currentInput = ''
-    dungeon = dungeon.Dungeon(player)
+    def __init__(self, dungeonName):
+        self.player = player.Player('NewCharacter')
+        self.gameIsRunning = True
+        self.currentInput = ''
+        self.dungeon = dungeon.Dungeon(dungeonName, self.player)
+        self.dungeon.SetupDefaultRooms()
 
     # Main game loop
     def GameLoop(self):
@@ -20,6 +24,10 @@ class Game:
             # Quit game
             if currentInput == "exit":
                 self.gameIsRunning = False
+
+            # Check for southern movement
+            if currentInput == "south":
+                self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "south")
 
 
 

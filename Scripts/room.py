@@ -1,15 +1,16 @@
 # A room in the Dungeon
 class Room:
-    name = ''
 
-    description = ''
+    def __init__(self, name, description, north="", east="", south="", west=""):
+        self.name = name
+        self.description = description
+        self.connections = dict()
 
-    connections = {}
-
-    def __init__(self, name, description, connections):
-        name = name
-        description = description
-        connections = connections
+        # Assign connections. Void connections are represented by ""
+        self.connections["north"] = north
+        self.connections["east"] = east
+        self.connections["south"] = south
+        self.connections["west"] = west
 
 
 

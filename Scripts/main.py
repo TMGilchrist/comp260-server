@@ -4,7 +4,8 @@ from Scripts import game
 # Entry point of program
 def main():
     print("Entry point of SUD game.")
-    newGame = game.Game()
+
+    newGame = game.Game("NewDungeon")
     newGame.GameLoop()
 
 
