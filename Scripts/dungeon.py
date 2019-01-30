@@ -17,7 +17,15 @@ class Dungeon:
 
     # Move from a room in a direction
     def Move(self, currentRoom, direction):
-
         newRoomName = self.rooms[currentRoom].connections[direction]
-        return self.rooms[newRoomName].name
+
+        # Check connection is valid
+        if newRoomName != "":
+            print("You walk " + direction)
+            return self.rooms[newRoomName].name
+
+        # If connection invalid, stay in currentRoom
+        else:
+            print("There is nowhere to go in this direction.")
+            return currentRoom
 

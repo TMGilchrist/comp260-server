@@ -10,24 +10,31 @@ Game class that holds important information for a game including the dungeon and
 class Game:
 
     def __init__(self, dungeonName):
-        self.player = player.Player('NewCharacter')
         self.gameIsRunning = True
         self.currentInput = ''
+
+        # Create a player and dungeon
+        self.player = player.Player()
         self.dungeon = dungeon.Dungeon(dungeonName, self.player)
+
+        # Setup rooms for the dungeon
         self.dungeon.SetupDefaultRooms()
+
+        # Do player setup including storing current dungeon
+        self.player.setup('NewCharacter', self.dungeon)
 
     # Main game loop
     def GameLoop(self):
         while self.gameIsRunning:
-            currentInput = self.player.inputManager.GetInput()
+            # currentInput = self.player.inputManager.GetInput()
+            self.player.inputManager.HandleInput()
 
+            """
             # Quit game
             if currentInput == "exit":
-                self.gameIsRunning = False
+                self.gameIsRunning = False"""
 
-            # Check for southern movement
-            if currentInput == "south":
-                self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "south")
+
 
 
 
