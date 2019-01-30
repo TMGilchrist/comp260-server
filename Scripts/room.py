@@ -1,3 +1,6 @@
+from Scripts import item
+
+
 # A room in the Dungeon
 class Room:
 
@@ -20,6 +23,12 @@ class Room:
         self.connections["east"] = east
         self.connections["south"] = south
         self.connections["west"] = west
+
+        self.gameItems = item.Items()
+
+        # A list of any items in the room
+        # self.items = [item.Items.sword, item.Items.shield]
+        self.items = {"sword": self.gameItems.sword, "shield": self.gameItems.shield}
 
 
 # Pre-constructed rooms that can be added during testing.
