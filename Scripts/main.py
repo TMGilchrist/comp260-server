@@ -5,7 +5,8 @@ from Scripts import game
 def main():
     print("Entry point of SUD game.\n\n")
 
-    newGame = game.Game("NewDungeon")
+    newGame = game.Game()
+    newGame.setup("New Dungeon")
     newGame.GameLoop()
 
 

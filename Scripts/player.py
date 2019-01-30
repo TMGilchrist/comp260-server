@@ -16,8 +16,8 @@ class Player:
         # The dungeon the player is currently in
         self.dungeon = currentDungeon
 
-        # The room the player is currently in
-        self.currentRoom = "Start"
+        # The room the player is currently in. Set to the start room when the player starts the game.
+        self.currentRoom = self.dungeon.startRoom
 
         # InputManager to handle typing
         self.inputManager = inputManager.InputManager(self, self.dungeon)

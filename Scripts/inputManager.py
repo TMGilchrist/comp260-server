@@ -31,7 +31,7 @@ class InputManager:
 
         # How to pass this back to game?
         if command == "exit":
-            return ''
+            return "exit"
 
         # Check for GO command.
         if command == "go":

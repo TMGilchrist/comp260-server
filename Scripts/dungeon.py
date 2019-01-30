@@ -17,13 +17,23 @@ class Dungeon:
 
         # A description of the dungeon that is shown at the start of the game.
         self.description = "----------------------------------------------------------\n" \
-                           "You descend the worn steps into the cool dark of the Dungeon. \nWhat awaits you within?\n" \
+                           "You descend the worn steps into the cool dark of the Dungeon. \n" \
+                           "What awaits you within?\n" \
                            "----------------------------------------------------------\n"
+
+        # Set up pre-defined rooms
+        self.defaultRooms = room.DefaultRooms()
+
+        # The room the player will start in
+        self.startRoom = ''
 
     # Setup the rooms of the dungeon. Default setup for testing.
     def SetupDefaultRooms(self):
-        self.rooms["Start"] = room.Room("Start", "You are in a bare room with a door in front of you.\n", south="Antechamber")
-        self.rooms["Antechamber"] = room.Room("Antechamber", "You are in a large chamber with a vaulted ceiling.\n", north="Start")
+        self.rooms["Entrance"] = self.defaultRooms.Entrance
+        self.rooms["Antechamber"] = self.defaultRooms.Antechamber
+
+        # Define which room the player should begin in
+        self.startRoom = self.rooms["Entrance"].name
 
     # Move from a room in a direction
     def Move(self, currentRoom, direction):
@@ -31,7 +41,7 @@ class Dungeon:
 
         # Check connection is valid
         if newRoomName != "":
-            print("\nYou walk " + direction + "\n")
+            print("\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription + "\n")
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom

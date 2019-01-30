@@ -9,7 +9,10 @@ Game class that holds important information for a game including the dungeon and
 """
 class Game:
 
-    def __init__(self, dungeonName):
+    #def __init__(self, dungeonName):
+
+
+    def setup(self, dungeonName):
         self.gameIsRunning = True
         self.currentInput = ''
 
@@ -23,19 +26,19 @@ class Game:
         # Do player setup including storing current dungeon
         self.player.setup('NewCharacter', self.dungeon)
 
-    # Main game loop
+    # Main game code
     def GameLoop(self):
+        # Pre-game intro text
         print(self.dungeon.description)
         print("\n" + self.dungeon.rooms[self.player.currentRoom].description + "\n")
 
+        # Main game loop
         while self.gameIsRunning:
-            # currentInput = self.player.inputManager.GetInput()
-            self.player.inputManager.HandleInput()
 
-            """
-            # Quit game
-            if currentInput == "exit":
-                self.gameIsRunning = False"""
+            # Handles player input. Also exits if the player inputs "exit". Might be a slightly bad way of doing this?
+            if self.player.inputManager.HandleInput() == "exit":
+                self.gameIsRunning = False
+
 
 
 
