@@ -25,6 +25,9 @@ class Game:
 
     # Main game loop
     def GameLoop(self):
+        print(self.dungeon.description)
+        print("\n" + self.dungeon.rooms[self.player.currentRoom].description + "\n")
+
         while self.gameIsRunning:
             # currentInput = self.player.inputManager.GetInput()
             self.player.inputManager.HandleInput()

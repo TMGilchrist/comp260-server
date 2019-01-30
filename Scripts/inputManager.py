@@ -44,7 +44,7 @@ class InputManager:
                 self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
 
         if command == "look":
-            print(self.dungeon.rooms[self.player.currentRoom].description)
+            print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
 
 
 
