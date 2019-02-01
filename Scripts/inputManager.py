@@ -1,3 +1,5 @@
+from colorama import Fore, Back, Style
+
 class InputManager:
 
     def __init__(self, player, dungeon):
@@ -124,11 +126,14 @@ class InputManager:
             print("Unable to take item.")
 
     def Look(self):
+        # Print room description
         print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
 
+        # Check for items
         for item in self.dungeon.rooms[self.player.currentRoom].items:
             print(self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
 
+        # Check for npcs
         for npc in self.dungeon.rooms[self.player.currentRoom].npcs:
             print(self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
 
