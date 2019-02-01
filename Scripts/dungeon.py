@@ -1,4 +1,5 @@
 from Scripts import room
+from colorama import Fore, Back, Style, init
 
 
 # The Dungeon the player explores
@@ -15,10 +16,13 @@ class Dungeon:
         # The rooms of the dungeon.
         self.rooms = {}
 
+        # Init colorama
+        init()
+
         # A description of the dungeon that is shown at the start of the game.
         self.description = "----------------------------------------------------------\n" \
-                           "You descend the worn steps into the cool dark of the Dungeon. \n" \
-                           "What awaits you within?\n" \
+                           + Fore.RED + "You descend the worn steps into the cool dark of the Dungeon. \n" \
+                           "What awaits you within?\n" + Fore.RESET + \
                            "----------------------------------------------------------\n"
 
         # Set up pre-defined rooms

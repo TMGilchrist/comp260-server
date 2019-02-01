@@ -1,6 +1,6 @@
 from Scripts import inputManager
 from Scripts import character
-
+from colorama import Fore, Back, Style, init
 
 class Player(character.Character):
 
@@ -12,6 +12,9 @@ class Player(character.Character):
         self.inputManager = ''
 
         self.inventory = {}
+
+        # Init colorama
+        init()
 
     def Setup(self, currentDungeon):
         self.dungeon = currentDungeon
@@ -25,9 +28,9 @@ class Player(character.Character):
     def CheckInventory(self):
 
         print("\n------------------------ \n"
-              "Inventory: " + str(len(self.inventory)) + " items \n")
+              + Fore.BLUE + "Inventory: " + Fore.RESET + str(len(self.inventory)) + " items \n")
 
         for item in self.inventory:
             print(" - " + item)
 
-        print("------------------------")
+        print("\n------------------------" + Back.RESET)
