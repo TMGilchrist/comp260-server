@@ -31,6 +31,7 @@ class Dungeon:
     def SetupDefaultRooms(self):
         self.rooms["Entrance"] = self.defaultRooms.Entrance
         self.rooms["Antechamber"] = self.defaultRooms.Antechamber
+        self.rooms["Tavern"] = self.defaultRooms.Tavern
 
         # Define which room the player should begin in
         self.startRoom = self.rooms["Entrance"].name

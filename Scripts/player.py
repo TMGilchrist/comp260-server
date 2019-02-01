@@ -1,21 +1,19 @@
 from Scripts import inputManager
+from Scripts import character
 
 
-class Player:
+class Player(character.Character):
 
-    def __init__(self):
-        self.name = ''
+    def __init__(self, name, health):
+        super().__init__(name, health)
+
         self.dungeon = ''
         self.currentRoom = ''
         self.inputManager = ''
-        # self.inventory = []
+
         self.inventory = {}
 
-    def Setup(self, name, currentDungeon):
-        # Player's name. With multiple players this should be unique.
-        self.name = name
-
-        # The dungeon the player is currently in
+    def Setup(self, currentDungeon):
         self.dungeon = currentDungeon
 
         # The room the player is currently in. Set to the start room when the player starts the game.

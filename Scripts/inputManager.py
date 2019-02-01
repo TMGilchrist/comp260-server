@@ -129,6 +129,9 @@ class InputManager:
         for item in self.dungeon.rooms[self.player.currentRoom].items:
             print(self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
 
+        for npc in self.dungeon.rooms[self.player.currentRoom].npcs:
+            print(self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
+
     def Move(self, userInput):
         if "north" in userInput:
             self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "north")

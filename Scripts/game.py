@@ -20,14 +20,14 @@ class Game:
         self.currentInput = ''
 
         # Create a player and dungeon
-        self.player = player.Player()
+        self.player = player.Player("NewCharacter", 10)
         self.dungeon = dungeon.Dungeon(dungeonName, self.player)
 
         # Setup rooms for the dungeon
         self.dungeon.SetupDefaultRooms()
 
         # Do player setup including storing current dungeon
-        self.player.Setup('NewCharacter', self.dungeon)
+        self.player.Setup(self.dungeon)
 
     # Main game code
     def GameLoop(self):
