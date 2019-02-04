@@ -38,10 +38,9 @@ class Game:
     # Main game code
     def GameLoop(self):
         # Pre-game intro text
-        print(self.dungeon.description)
-        # print("\n" + self.dungeon.rooms[self.player.currentRoom].description + "\n")
+        server.Output(self.client, self.dungeon.description)
 
-        self.player.inputManager.Look()
+        server.Output(self.client, self.player.inputManager.Look())
 
         # Main server loop
         while self.gameIsRunning:
@@ -53,10 +52,6 @@ class Game:
 
             except socket.error:
                 print("Unable to access client")
-
-            # Process the user input
-            # if self.player.inputManager.HandleInput(data.decode("utf-8")) == "exit":
-                # self.gameIsRunning = False
 
             serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
 

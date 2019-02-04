@@ -54,24 +54,24 @@ class InputManager:
             return "exit"
 
         elif command == "help":
-            print(self.helpText)
+            return self.helpText
 
         # Check for GO command.
         elif command == "go":
-            self.Move(userInput)
+            return self.Move(userInput)
 
         elif command == "look":
             return self.Look()
 
         elif command == "take":
-            self.TakeItem(splitInput)
+            return self.TakeItem(splitInput)
 
         elif command == "inventory":
             self.player.CheckInventory()
             self.InventoryMenu()
 
         else:
-            print("No such command - Use 'help' to display a list of commands.")
+            return "No such command - Use 'help' to display a list of commands."
 
     def InventoryMenu(self):
         self.inventoryActive = True
@@ -117,7 +117,7 @@ class InputManager:
 
         # If at least one match found (set is not empty)
         if bool(matches):
-            print(self.dungeon.rooms[self.player.currentRoom].items[matches[0]].pickupText)
+            output = self.dungeon.rooms[self.player.currentRoom].items[matches[0]].pickupText
 
             # Add first item that matches to the inventory
             # self.player.inventory.append(self.dungeon.rooms[self.player.currentRoom].items[matches[0]])
@@ -126,8 +126,10 @@ class InputManager:
             # Remove item from the room
             del(self.dungeon.rooms[self.player.currentRoom].items[matches[0]])
 
+            return output
+
         else:
-            print("Unable to take item.")
+            return "Unable to take item."
 
     def Look(self):
         # Print room description
@@ -136,11 +138,11 @@ class InputManager:
 
         # Check for items
         for item in self.dungeon.rooms[self.player.currentRoom].items:
-            output = output + (self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
+            output = output + ("\n" + self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
 
         # Check for npcs
         for npc in self.dungeon.rooms[self.player.currentRoom].npcs:
-            output = output + (self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
+            output = output + ("\n" + self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
 
         return output
 
@@ -157,5 +159,8 @@ class InputManager:
         elif "west" in userInput:
             self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
 
+        # Return empty string to satisfy serverOutput in gameloop.
+        # Output here is done in dungeon.Move function.
+        return ''
 
 

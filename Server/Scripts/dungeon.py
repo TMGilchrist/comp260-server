@@ -1,4 +1,5 @@
 from Scripts import room
+from Scripts import server
 from colorama import Fore, Back, Style, init
 
 
@@ -46,11 +47,11 @@ class Dungeon:
 
         # Check connection is valid
         if newRoomName != "":
-            print("\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
+            server.Output(self.player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom
         else:
-            print("\nThere is nowhere to go in this direction.")
+            server.Output(self.player.client, "\nThere is nowhere to go in this direction.")
             return currentRoom
 
