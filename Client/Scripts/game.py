@@ -17,25 +17,9 @@ class Game:
     def __init__(self, networkSocket):
         self.gameIsRunning = True
         self.currentInput = ''
-        # self.player = ''
-        # self.dungeon = ''
 
         self.networkSocket = networkSocket
         self.inputManager = inputManager.InputManager()
-
-    def setup(self, dungeonName):
-        """self.gameIsRunning = True
-        self.currentInput = ''
-
-        # Create a player and dungeon
-        self.player = player.Player("NewCharacter", 10, self.client)
-        self.dungeon = dungeon.Dungeon(dungeonName, self.player)
-
-        # Setup rooms for the dungeon
-        self.dungeon.SetupDefaultRooms()
-
-        # Do player setup including storing current dungeon
-        self.player.Setup(self.dungeon)"""
 
     # Main game code
     def GameLoop(self):

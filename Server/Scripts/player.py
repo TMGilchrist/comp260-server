@@ -29,10 +29,12 @@ class Player(character.Character):
 
     def CheckInventory(self):
 
-        print("\n------------------------ \n"
-              + Fore.BLUE + "Inventory: " + Fore.RESET + str(len(self.inventory)) + " items \n")
+        output = ("\n------------------------ \n"
+                  + Fore.BLUE + "Inventory: " + Fore.RESET + str(len(self.inventory)) + " items \n")
 
         for item in self.inventory:
-            print(" - " + item)
+            output += (" - " + item)
 
-        print("\n------------------------" + Back.RESET)
+        output += ("\n------------------------" + Back.RESET)
+
+        return output

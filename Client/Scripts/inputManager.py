@@ -22,7 +22,6 @@ class InputManager:
         # If the player is in the inventory menu
         self.inventoryActive = False
 
-
         # Initialise colorama
         init()
 

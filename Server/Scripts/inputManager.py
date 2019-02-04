@@ -67,8 +67,9 @@ class InputManager:
             return self.TakeItem(splitInput)
 
         elif command == "inventory":
-            self.player.CheckInventory()
-            self.InventoryMenu()
+            self.inventoryActive = True
+            return self.player.CheckInventory()
+            # self.InventoryMenu()
 
         else:
             return "No such command - Use 'help' to display a list of commands."
