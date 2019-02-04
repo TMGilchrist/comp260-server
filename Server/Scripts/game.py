@@ -37,10 +37,11 @@ class Game:
 
     # Main game code
     def GameLoop(self):
-        # Pre-game intro text
-        server.Output(self.client, self.dungeon.description)
+        print("Server in gameloop")
 
-        server.Output(self.client, self.player.inputManager.Look())
+        # Pre-game intro text
+        intro = self.dungeon.description + self.player.inputManager.Look()
+        server.Output(self.client, intro)
 
         # Main server loop
         while self.gameIsRunning:

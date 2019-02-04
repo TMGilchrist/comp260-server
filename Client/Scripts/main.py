@@ -31,18 +31,6 @@ def ClientSetup():
     testString = "Client connected."
     mySocket.send(testString.encode())
 
-    """
-    # Send/Receive data to/from server
-    while True:
-        # Receive data
-        try:
-            data = mySocket.recv(4096)
-            print(data.decode("utf-8"))
-        except socket.error:
-            print("Server lost.")
-            time.sleep(1.0)
-    """
-
     return mySocket
 
 
