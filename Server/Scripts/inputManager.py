@@ -41,8 +41,8 @@ class InputManager:
 
         return newInput.lower()
 
-    def HandleInput(self):
-        userInput = self.GetInput("\nYou stand at the ready.")
+    def HandleInput(self, userInput):
+        # userInput = self.GetInput("\nYou stand at the ready.")
 
         # Split string into individual words
         splitInput = userInput.split(' ')

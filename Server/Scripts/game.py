@@ -2,18 +2,24 @@
 
 from Scripts import player
 from Scripts import dungeon
+# import socket
 
 
 """
 Game class that holds important information for a game including the dungeon and the player. 
 """
+
+
 class Game:
 
-    def __init__(self):
+    def __init__(self, client):
         self.gameIsRunning = ''
         self.currentInput = ''
         self.player = ''
         self.dungeon = ''
+
+        self.client = client
+
 
     def setup(self, dungeonName):
         self.gameIsRunning = True
@@ -40,9 +46,16 @@ class Game:
         # Main game loop
         while self.gameIsRunning:
 
-            # Handles player input. Also exits if the player inputs "exit". Might be a slightly bad way of doing this?
-            if self.player.inputManager.HandleInput() == "exit":
+            # Receive some test data from the client
+            data = self.client[0].recv(4096)
+            print(data.decode("utf-8"))
+
+            if self.player.inputManager.HandleInput(data.decode("utf-8")) == "exit":
                 self.gameIsRunning = False
+
+            # Handles player input. Also exits if the player inputs "exit". Might be a slightly bad way of doing this?
+            # if self.player.inputManager.HandleInput() == "exit":
+                # self.gameIsRunning = False
 
 
 

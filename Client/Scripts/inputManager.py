@@ -3,13 +3,7 @@ from colorama import Fore, Back, Style, init
 
 class InputManager:
 
-    def __init__(self, player, dungeon):
-        # Store the player that has instantiated an inputManager
-        self.player = player
-
-        # The current dungeon
-        self.dungeon = dungeon
-
+    def __init__(self):
         # Help text, should include commands and useful info.
         self.helpText = "\n------------------------------------------------------------------\n" \
                         + Fore.BLUE + "General Commands \n" \
@@ -41,6 +35,11 @@ class InputManager:
 
         return newInput.lower()
 
+    """
+    The following functions should be server-side to act on the input of the player. The above input check should
+    be client-side to allow the user to input data. 
+    """
+"""
     def HandleInput(self):
         userInput = self.GetInput("\nYou stand at the ready.")
 
@@ -153,4 +152,4 @@ class InputManager:
 
         elif "west" in userInput:
             self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
-
+"""
