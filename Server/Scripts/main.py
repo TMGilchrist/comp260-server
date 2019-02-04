@@ -1,6 +1,5 @@
 from Scripts import game
 import socket
-import time
 
 
 # Entry point of program
@@ -26,23 +25,6 @@ def ServerSetup():
     # Receive some test data from the client
     data = client[0].recv(4096)
     print(data.decode("utf-8"))
-
-    # ?
-    seqID = 0
-
-    # Send and receive data to/from client
-    """
-    while True:
-        # Send a test string
-        try:
-            testString = str(seqID) + ":" + time.ctime()
-            client[0].send(testString.encode())
-        except socket.error:
-            print("Client lost")
-
-        seqID += 1
-        time.sleep(0.5)
-    """
 
     return client
 

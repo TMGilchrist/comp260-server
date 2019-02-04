@@ -1,4 +1,6 @@
 from colorama import Fore, Back, Style, init
+import socket
+from Scripts import server
 
 
 class InputManager:
@@ -59,7 +61,7 @@ class InputManager:
             self.Move(userInput)
 
         elif command == "look":
-            self.Look()
+            return self.Look()
 
         elif command == "take":
             self.TakeItem(splitInput)
@@ -76,8 +78,6 @@ class InputManager:
 
         # Keep menu open while the user is in the inventory
         while self.inventoryActive:
-
-            # print("\nYou are in your inventory.")
 
             userInput = self.GetInput("\nYou are in your inventory.")
 
@@ -131,15 +131,18 @@ class InputManager:
 
     def Look(self):
         # Print room description
-        print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
+        # print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
+        output = "\n" + self.dungeon.rooms[self.player.currentRoom].description
 
         # Check for items
         for item in self.dungeon.rooms[self.player.currentRoom].items:
-            print(self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
+            output = output + (self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
 
         # Check for npcs
         for npc in self.dungeon.rooms[self.player.currentRoom].npcs:
-            print(self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
+            output = output + (self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
+
+        return output
 
     def Move(self, userInput):
         if "north" in userInput:
@@ -153,4 +156,6 @@ class InputManager:
 
         elif "west" in userInput:
             self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
+
+
 

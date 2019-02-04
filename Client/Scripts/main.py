@@ -28,7 +28,7 @@ def ClientSetup():
             print("Could not connect to server")
 
     # Send some test data to the server
-    testString = "this is a test from the python client"
+    testString = "Client connected."
     mySocket.send(testString.encode())
 
     """

@@ -2,7 +2,8 @@
 
 from Scripts import player
 from Scripts import dungeon
-# import socket
+from Scripts import server
+import socket
 
 
 """
@@ -20,13 +21,12 @@ class Game:
 
         self.client = client
 
-
     def setup(self, dungeonName):
         self.gameIsRunning = True
         self.currentInput = ''
 
         # Create a player and dungeon
-        self.player = player.Player("NewCharacter", 10)
+        self.player = player.Player("NewCharacter", 10, self.client)
         self.dungeon = dungeon.Dungeon(dungeonName, self.player)
 
         # Setup rooms for the dungeon
@@ -43,19 +43,29 @@ class Game:
 
         self.player.inputManager.Look()
 
-        # Main game loop
+        # Main server loop
         while self.gameIsRunning:
 
-            # Receive some test data from the client
-            data = self.client[0].recv(4096)
-            print(data.decode("utf-8"))
+            # Get client user input
+            try:
+                data = self.client[0].recv(4096)
+                print(data.decode("utf-8"))
 
-            if self.player.inputManager.HandleInput(data.decode("utf-8")) == "exit":
+            except socket.error:
+                print("Unable to access client")
+
+            # Process the user input
+            # if self.player.inputManager.HandleInput(data.decode("utf-8")) == "exit":
+                # self.gameIsRunning = False
+
+            serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
+
+            if serverOutput == "exit":
                 self.gameIsRunning = False
 
-            # Handles player input. Also exits if the player inputs "exit". Might be a slightly bad way of doing this?
-            # if self.player.inputManager.HandleInput() == "exit":
-                # self.gameIsRunning = False
+            else:
+                server.Output(self.client, serverOutput)
+
 
 
 
