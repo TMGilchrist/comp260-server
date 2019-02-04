@@ -2,6 +2,7 @@ from Scripts import inputManager
 from Scripts import character
 from colorama import Fore, Back, Style, init
 
+
 class Player(character.Character):
 
     def __init__(self, name, health):
