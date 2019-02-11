@@ -9,6 +9,7 @@ from colorama import Fore, init
 import socket
 import time
 import threading
+from queue import *
 
 
 """
@@ -42,6 +43,8 @@ class Game:
         # Data lock for clients
         self.clientsLock = threading.Lock()
 
+        # Queue of commands to be processed
+        self.commandQueue = Queue()
 
     def setup(self, dungeonName):
         self.gameIsRunning = True
@@ -64,16 +67,8 @@ class Game:
         self.networkSocket.bind(("127.0.0.1", 8222))
         self.networkSocket.listen(5)
 
-        self.myAcceptThread = threading.Thread(target=self.acceptThread, args=(self.networkSocket,))
+        self.myAcceptThread = threading.Thread(target=self.AcceptThread, args=(self.networkSocket,))
         self.myAcceptThread.start()
-
-        #self.client = self.networkSocket.accept()
-
-        # Receive some test data from the client
-        #data = self.client[0].recv(4096)
-        #print(data.decode("utf-8"))
-
-        #self.isConnected = True
 
     # Main game code
     def GameLoop(self):
@@ -90,26 +85,30 @@ class Game:
 
             self.clientsLock.acquire()
 
-            # Iterate over clients
+            """"# Iterate over clients
             for client in self.clients:
                 try:
-                    #testString = str(self.clients[client]) + ":" + time.ctime()
+                    # testString = str(self.clients[client]) + ":" + time.ctime()
                     self.clients[client] += 1
-                    #client.send(testString.encode())
-                    #print("Sending: " + testString)
+                    # client.send(testString.encode())
+                    # print("Sending: " + testString)
 
                     print("Process client input")
                     print(self.clients[client])
 
+                    # Update player client -> used in Dungeon.Move
                     self.player.client = client
 
+                    # Get input from client
                     data = client.recv(4096)
                     print(Fore.GREEN + "Client: " + data.decode("utf-8") + Fore.RESET)
 
+                    # Process input and create output
                     serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
 
                     if serverOutput == "exit":
-                        self.gameIsRunning = False
+                        # self.gameIsRunning = False
+                        print("This should disconnect the client but not affect the server.")
 
                     else:
                         # Send server output. server.Output returns false if not connected.
@@ -120,6 +119,33 @@ class Game:
                     # Record client as lost
                     self.lostClients.append(client)
                     print(Fore.RED + "Lost client!" + Fore.RESET)
+            """
+
+            # Iterate over clients
+            for client in self.clients:
+                # Start a new recieve thread for each client
+                newRecieveThread = threading.Thread(target=self.ReceiveThread, args=(client,))
+                newRecieveThread.start()
+
+            while self.commandQueue.qsize() > 0:
+                currentCommand = self.commandQueue.get()
+
+                # Update player client -> used in Dungeon.Move
+                self.player.client = currentCommand[0]
+
+                # Process input and create output
+                serverOutput = self.player.inputManager.HandleInput(currentCommand[1].decode("utf-8"))
+
+                if serverOutput == "exit":
+                    # self.gameIsRunning = False
+                    print("This should disconnect the client but not affect the server.")
+
+                else:
+                    # Send server output. server.Output returns false if not connected.
+                    print(Fore.GREEN + "Sending output to client" + Fore.RESET)
+                    print(Fore.GREEN + serverOutput + Fore.RESET)
+                    self.isConnected = server.Output(currentCommand[0], serverOutput)
+
 
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
@@ -170,7 +196,8 @@ class Game:
             """
 
     # Thread function
-    def acceptThread(self, serverSocket):
+    def AcceptThread(self, serverSocket):
+
         while True:
             # Get new client
             new_client = serverSocket.accept()
@@ -180,6 +207,23 @@ class Game:
             self.clientsLock.acquire()
             self.clients[new_client[0]] = 0
             self.clientsLock.release()
+
+    def ReceiveThread(self, client):
+        while self.gameIsRunning:
+            try:
+                # Get data from client and store as a tuple.
+                newCommand = (client, client.recv(4096))
+
+                #Add to queue
+                self.commandQueue.put(newCommand)
+
+            except socket.error:
+                print(Fore.RED + "Lost Client" + Fore.RESET)
+                # self.lostClients.append(client)
+                time.sleep(5.0)
+
+
+
 
 
 

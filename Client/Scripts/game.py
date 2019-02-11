@@ -115,7 +115,7 @@ class Game:
                 try:
                     # Send input
                     self.networkSocket.send(self.currentInput.encode())
-                    time.sleep(0.25)
+                    time.sleep(0.5)
 
                     # Receive response
                     while self.messageQueue.qsize() > 0:
