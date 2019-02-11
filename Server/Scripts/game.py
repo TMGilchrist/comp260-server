@@ -3,6 +3,9 @@
 from Scripts import player
 from Scripts import dungeon
 from Scripts import server
+
+from colorama import Fore, init
+
 import socket
 import time
 import threading
@@ -22,6 +25,9 @@ class Game:
         self.currentInput = ''
         self.player = ''
         self.dungeon = ''
+
+        # Init colourama
+        init()
 
         self.networkSocket = ''
         self.myAcceptThread = ''
@@ -98,7 +104,7 @@ class Game:
                     self.player.client = client
 
                     data = client.recv(4096)
-                    print(data.decode("utf-8"))
+                    print(Fore.GREEN + "Client: " + data.decode("utf-8") + Fore.RESET)
 
                     serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
 

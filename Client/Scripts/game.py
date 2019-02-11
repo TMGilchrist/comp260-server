@@ -51,7 +51,7 @@ class Game:
 
             if(self.isConnected == True):
                 try:
-                    confirmationData = "Client: Client connected to the server"
+                    confirmationData = "Connected to the server"
                     self.networkSocket.send(confirmationData.encode())
 
                 except socket.error:

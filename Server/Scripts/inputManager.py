@@ -44,7 +44,7 @@ class InputManager:
         return newInput.lower()
 
     def HandleInput(self, userInput):
-        # userInput = self.GetInput("\nYou stand at the ready.")
+        print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
         # Split string into individual words
         splitInput = userInput.split(' ')
