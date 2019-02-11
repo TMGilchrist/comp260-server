@@ -1,6 +1,9 @@
 from Scripts import inputManager
 import socket
 import time
+import threading
+
+from queue import *
 
 
 """
@@ -17,8 +20,14 @@ class Game:
         self.currentInput = ''
 
         self.networkSocket = networkSocket
+        self.myReceiveThread = ''
+
         self.inputManager = inputManager.InputManager()
 
+        # Queue of messages from the server
+        self.messageQueue = Queue()
+
+        # Connect to the server
         self.Connect()
 
     def Connect(self):
@@ -31,7 +40,10 @@ class Game:
             try:
                 self.networkSocket.connect(("127.0.0.1", 8222))
                 self.isConnected = True
-                print("Server connect successful.")
+                print("Initial server connect successful.")
+
+                self.myReceiveThread = threading.Thread(target=self.receiveThread, args=(self.networkSocket,))
+                self.myReceiveThread.start()
 
             except socket.error:
                 self.isConnected = False
@@ -62,6 +74,8 @@ class Game:
 
             # While client not connected to a server
             while self.isConnected == False:
+                print("Not connected.")
+
                 # Check if socket is null
                 if self.networkSocket is None:
                     self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,6 +107,7 @@ class Game:
 
                 # Get user input
                 self.currentInput = self.inputManager.GetInput("\nYou stand at the ready.")
+                #time.sleep(1)
 
                 # Receive server output
                 try:
@@ -100,8 +115,11 @@ class Game:
                     self.networkSocket.send(self.currentInput.encode())
 
                     # Receive response
-                    data = self.networkSocket.recv(4096)
-                    print(data.decode("utf-8"))
+                    #data = self.networkSocket.recv(4096)
+                    #print(data.decode("utf-8"))
+
+                    while self.messageQueue.qsize() > 0:
+                        print(self.messageQueue.get())
 
                 except socket.error:
                     print("Server lost.")
@@ -134,7 +152,19 @@ class Game:
         except socket.error:
             print("Server lost.")
 
+    def receiveThread(self, serverSocket):
+        while self.gameIsRunning:
+            if self.isConnected:
+                try:
+                    self.messageQueue.put(serverSocket.recv(4096).decode("utf-8"))
 
+                except socket.error:
+                    self.isConnected = False
+                    print("lost server")
+
+            else:
+                print("no server")
+                time.sleep(5.0)
 
 
 
