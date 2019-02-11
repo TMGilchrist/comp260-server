@@ -201,7 +201,7 @@ class Game:
         while True:
             # Get new client
             new_client = serverSocket.accept()
-            print("Added client!")
+            print("Added client!") # <-- at this point a new player should also be created to map to the client.
 
             # Add new client to dictionary
             self.clientsLock.acquire()
