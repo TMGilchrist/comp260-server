@@ -4,6 +4,7 @@ import time
 import threading
 
 from queue import *
+from colorama import Fore, init
 
 
 """
@@ -21,6 +22,9 @@ class Game:
 
         self.networkSocket = networkSocket
         self.myReceiveThread = ''
+
+        # Init colourama
+        init()
 
         self.inputManager = inputManager.InputManager()
 
@@ -47,19 +51,19 @@ class Game:
 
             except socket.error:
                 self.isConnected = False
-                print("Could not connect to server.")
+                print(Fore.RED + "Could not connect to server." + Fore.RESET)
 
-            if(self.isConnected == True):
+            if self.isConnected == True:
                 try:
                     confirmationData = "Connected to the server"
-                    self.networkSocket.send(confirmationData.encode())
+                    # self.networkSocket.send(confirmationData.encode())
 
                 except socket.error:
                     self.isConnected = False
                     self.networkSocket = None
 
             if self.isConnected == False:
-                print("No server")
+                print(Fore.RED + "No server" + Fore.RESET)
                 time.sleep(1.0)
 
     # Main game code
@@ -74,7 +78,7 @@ class Game:
 
             # While client not connected to a server
             while self.isConnected == False:
-                print("Not connected.")
+                print(Fore.RED + "Not connected." + Fore.RESET)
 
                 # Check if socket is null
                 if self.networkSocket is None:
@@ -88,42 +92,37 @@ class Game:
 
                 except socket.error:
                     self.isConnected = False
-                    print("Could not connect to server.")
+                    print(Fore.RED + "Could not connect to server." + Fore.RESET)
 
                 if(self.isConnected == True):
                     try:
                         confirmationData = "Client: Client connected to the server"
-                        self.networkSocket.send(confirmationData.encode())
+                        # self.networkSocket.send(confirmationData.encode())
 
                     except socket.error:
                         self.isConnected = False
                         self.networkSocket = None
 
                 if self.isConnected == False:
-                    print("No server")
+                    print(Fore.RED + "No server" + Fore.RESET)
                     time.sleep(1.0)
 
             while self.isConnected == True:
 
                 # Get user input
                 self.currentInput = self.inputManager.GetInput("\nYou stand at the ready.")
-                #time.sleep(1)
 
-                # Receive server output
                 try:
                     # Send input
                     self.networkSocket.send(self.currentInput.encode())
+                    time.sleep(0.25)
 
                     # Receive response
-                    #data = self.networkSocket.recv(4096)
-                    #print(data.decode("utf-8"))
-
                     while self.messageQueue.qsize() > 0:
                         print(self.messageQueue.get())
 
                 except socket.error:
-                    print("Server lost.")
-                    #self.Reconnect()
+                    print(Fore.RED + "Server lost." + Fore.RESET)
                     self.isConnected = False
                     self.networkSocket = None
 
@@ -139,7 +138,7 @@ class Game:
                 connected = True
 
             except socket.error:
-                print("Unable to connect.")
+                print(Fore.RED + "Unable to connect." + Fore.RESET)
                 time.sleep(1)
 
     def GetServerOutput(self):
@@ -150,20 +149,21 @@ class Game:
             print(data.decode("utf-8"))
 
         except socket.error:
-            print("Server lost.")
+            print(Fore.RED + "Server lost." + Fore.RESET)
 
     def receiveThread(self, serverSocket):
         while self.gameIsRunning:
             if self.isConnected:
                 try:
-                    self.messageQueue.put(serverSocket.recv(4096).decode("utf-8"))
+                    message = serverSocket.recv(4096).decode("utf-8")
+                    self.messageQueue.put(message)
 
                 except socket.error:
                     self.isConnected = False
-                    print("lost server")
+                    print(Fore.RED + "Lost server" + Fore.RESET)
 
             else:
-                print("no server")
+                print(Fore.RED + "No server" + Fore.RESET)
                 time.sleep(5.0)
 
 

@@ -113,12 +113,13 @@ class Game:
 
                     else:
                         # Send server output. server.Output returns false if not connected.
+                        print(Fore.GREEN + "Sending output to client" + Fore.RESET)
                         self.isConnected = server.Output(client, serverOutput)
 
                 except socket.error:
                     # Record client as lost
                     self.lostClients.append(client)
-                    print("Lost client!")
+                    print(Fore.RED + "Lost client!" + Fore.RESET)
 
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
