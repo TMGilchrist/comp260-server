@@ -5,9 +5,11 @@ def Output(client, output):
     # Send a test string
     try:
         client[0].send(output.encode())
+        return True
 
     except socket.error:
         print("Client lost")
+        return False
 
 def ServerSetup():
     # Setup network socket

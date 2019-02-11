@@ -6,9 +6,9 @@ import socket
 def main():
     print("Entry point of SUD game.\n\n")
 
-    client = ServerSetup()
+    #client = ServerSetup()
 
-    newGame = game.Game(client)
+    newGame = game.Game()
     newGame.setup("New Dungeon")
     newGame.GameLoop()
 
