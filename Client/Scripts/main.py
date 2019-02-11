@@ -7,9 +7,9 @@ import time
 def main():
     print("Entry point of SUD game.\n\n")
 
-    networkSocket = ClientSetup()
+    #networkSocket = ClientSetup()
 
-    newGame = game.Game(networkSocket)
+    newGame = game.Game()
     # newGame.setup()
     newGame.GameLoop()
 

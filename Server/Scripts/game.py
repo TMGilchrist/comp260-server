@@ -50,6 +50,8 @@ class Game:
         data = self.client[0].recv(4096)
         print(data.decode("utf-8"))
 
+        self.isConnected = True
+
     # Main game code
     def GameLoop(self):
         print("Server in gameloop")
@@ -65,22 +67,25 @@ class Game:
             if self.isConnected == False:
                 print("Waiting for client")
                 self.client = self.networkSocket.accept()
+                self.player.client = self.client
 
-            # Attempt to get input from client
-            try:
-                self.isConnected = True
-                print("Client found")
+                # Attempt to get input from client
+                try:
+                    self.isConnected = True
+                    print("Client found")
 
-                data = self.client[0].recv(4096)
-                print(data.decode("utf-8"))
+                    data = self.client[0].recv(4096)
+                    print(data.decode("utf-8"))
 
-            except socket.error:
-                print("Unable to access client")
-                self.isConnected = False
+                except socket.error:
+                    print("Unable to access client")
+                    self.isConnected = False
 
             # While connected, process client data and output if possible
             while self.isConnected == True:
                 try:
+                    print("Process client input")
+
                     data = self.client[0].recv(4096)
                     print(data.decode("utf-8"))
 
