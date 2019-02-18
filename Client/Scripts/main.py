@@ -4,7 +4,7 @@ import time
 import sys
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
-qtCreatorFile = "../Forms/testForm.ui"
+qtCreatorFile = "../Forms/ClientMain.ui"
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
@@ -15,7 +15,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
 
-        self.pushButton.clicked.connect(self.PrintStuff)
+        self.textDisplayMain.append("Foo")
+        # self.pushButton.clicked.connect(self.PrintStuff)
 
     def PrintStuff(self):
         print("Clicking button")
