@@ -3,6 +3,7 @@
 from Scripts import player
 from Scripts import dungeon
 from Scripts import server
+from Scripts import inputManager
 
 from colorama import Fore, init
 
@@ -24,8 +25,9 @@ class Game:
         self.isConnected = ''
 
         self.currentInput = ''
-        self.player = ''
         self.dungeon = ''
+
+        self.inputManager = ''
 
         # Init colourama
         init()
@@ -52,16 +54,14 @@ class Game:
 
         self.Connect()
 
-        # Create a player and dungeon
-        self.dungeon = dungeon.Dungeon(dungeonName, self.player)
-        self.player = player.Player("NewCharacter", 10, self.dungeon, self.client)
+        # Create a dungeon
+        self.dungeon = dungeon.Dungeon(dungeonName)
 
+        # Create inputManager
+        self.inputManager = inputManager.InputManager(self.dungeon)
 
         # Setup rooms for the dungeon
         self.dungeon.SetupDefaultRooms()
-
-        # Do player setup including storing current dungeon
-        self.player.Setup(self.dungeon)
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -76,7 +76,7 @@ class Game:
         print("Server in gameloop")
 
         # Pre-game intro text
-        intro = self.dungeon.description + self.player.inputManager.Look()
+        # intro = self.dungeon.description + self.player.inputManager.Look(self.player)
 
         #server.Output(self.client, intro)
 
@@ -95,12 +95,7 @@ class Game:
             while self.commandQueue.qsize() > 0:
                 currentCommand = self.commandQueue.get()
 
-                # Update player client -> used in Dungeon.Move
-                #self.player.client = currentCommand[0]
-                #print("Current client: " + str(self.player.client))
-
-                # Process input and create output
-                serverOutput = self.dungeon.players[currentCommand[0]].inputManager.HandleInput(currentCommand[1].decode("utf-8"))
+                serverOutput = self.inputManager.HandleInput(self.dungeon.players[currentCommand[0]], currentCommand[1].decode("utf-8"))
 
                 if serverOutput == "exit":
                     # self.gameIsRunning = False

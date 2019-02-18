@@ -10,7 +10,7 @@ class Player(character.Character):
 
         self.dungeon = currentDungeon
         self.currentRoom = ''
-        self.inputManager = ''
+        # self.inputManager = ''
 
         self.inventory = {}
         self.client = client
@@ -27,7 +27,7 @@ class Player(character.Character):
         self.currentRoom = self.dungeon.startRoom
 
         # InputManager to handle typing
-        self.inputManager = inputManager.InputManager(self, self.dungeon)
+        # self.inputManager = inputManager.InputManager(self.dungeon)
 
     def CheckInventory(self):
 

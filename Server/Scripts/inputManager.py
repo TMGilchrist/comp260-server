@@ -1,13 +1,13 @@
 from colorama import Fore, Back, Style, init
 import socket
 from Scripts import server
-from PyQt5 import QtGui
+# from PyQt5 import QtGui
 
 class InputManager:
 
-    def __init__(self, player, dungeon):
+    def __init__(self, dungeon):
         # Store the player that has instantiated an inputManager
-        self.player = player
+        # self.player = player
 
         # The current dungeon
         self.dungeon = dungeon
@@ -52,13 +52,13 @@ class InputManager:
         # Initialise colorama
         init()
 
-    def GetInput(self, inputTitle=''):
+    def GetInput(self, player, inputTitle=''):
         print(inputTitle)
         newInput = input(Fore.MAGENTA + "Enter a command: " + Fore.RESET)
 
         return newInput.lower()
 
-    def HandleInput(self, userInput):
+    def HandleInput(self, player, userInput):
         print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
         # Split string into individual words
@@ -73,26 +73,26 @@ class InputManager:
 
         # Check for GO command.
         elif command == "go":
-            return self.Move(userInput)
+            return self.Move(player, userInput)
 
         elif command == "look":
-            return self.Look()
+            return self.Look(player)
 
         elif command == "take":
-            return self.TakeItem(splitInput)
+            return self.TakeItem(player, splitInput)
 
         elif command == "say":
-            return self.Say(splitInput)
+            return self.Say(player, splitInput)
 
         elif command == "inventory":
             self.inventoryActive = True
-            return self.player.CheckInventory()
-            # self.InventoryMenu()
+            return player.CheckInventory()
+            # self.InventoryMenu(player)
 
         else:
             return "No such command - Use 'help' to display a list of commands."
 
-    def InventoryMenu(self):
+    def InventoryMenu(self, player):
         self.inventoryActive = True
 
         # Keep menu open while the user is in the inventory
@@ -110,13 +110,13 @@ class InputManager:
 
             elif command == "examine":
                 # Compare the dictionary keys of items in the room with the input the player has entered, storing matches in a new set.
-                matchSet = set(splitInput).intersection(self.player.inventory.keys())
+                matchSet = set(splitInput).intersection(player.inventory.keys())
 
                 # Convert set of matching keys to a list
                 matches = list(matchSet)
 
                 if bool(matches):
-                    print(self.player.inventory[matches[0]].description)
+                    print(player.inventory[matches[0]].description)
 
                 else:
                     print("Unable to find item.")
@@ -127,65 +127,64 @@ class InputManager:
             else:
                 print("No such command. You are currently in the Inventory Menu - Use 'help' to display a list of commands.")
 
-    def TakeItem(self, userInput):
+    def TakeItem(self, player, userInput):
         # Compare the dictionary keys of items in the room with the input the player has entered, storing matches in a new set.
-        matchSet = set(userInput).intersection(self.dungeon.rooms[self.player.currentRoom].items.keys())
+        matchSet = set(userInput).intersection(self.dungeon.rooms[player.currentRoom].items.keys())
 
         # Convert set of matching keys to a list
         matches = list(matchSet)
 
         # If at least one match found (set is not empty)
         if bool(matches):
-            output = self.dungeon.rooms[self.player.currentRoom].items[matches[0]].pickupText
+            output = self.dungeon.rooms[player.currentRoom].items[matches[0]].pickupText
 
             # Add first item that matches to the inventory
             # self.player.inventory.append(self.dungeon.rooms[self.player.currentRoom].items[matches[0]])
-            self.player.inventory[self.dungeon.rooms[self.player.currentRoom].items[matches[0]].name] = self.dungeon.rooms[self.player.currentRoom].items[matches[0]]
+            player.inventory[self.dungeon.rooms[player.currentRoom].items[matches[0]].name] = self.dungeon.rooms[player.currentRoom].items[matches[0]]
 
             # Remove item from the room
-            del(self.dungeon.rooms[self.player.currentRoom].items[matches[0]])
+            del(self.dungeon.rooms[player.currentRoom].items[matches[0]])
 
             return output
 
         else:
             return "Unable to take item."
 
-    def Look(self):
+    def Look(self, player):
         # Print room description
-        # print("\n" + self.dungeon.rooms[self.player.currentRoom].description)
-        output = "\n" + self.dungeon.rooms[self.player.currentRoom].description
+        output = "\n" + self.dungeon.rooms[player.currentRoom].description
 
         # Check for items
-        for item in self.dungeon.rooms[self.player.currentRoom].items:
-            output = output + ("\n" + self.dungeon.rooms[self.player.currentRoom].itemPlacement[item])
+        for item in self.dungeon.rooms[player.currentRoom].items:
+            output = output + ("\n" + self.dungeon.rooms[player.currentRoom].itemPlacement[item])
 
         # Check for npcs
-        for npc in self.dungeon.rooms[self.player.currentRoom].npcs:
-            output = output + ("\n" + self.dungeon.rooms[self.player.currentRoom].npcPlacement[npc])
+        for npc in self.dungeon.rooms[player.currentRoom].npcs:
+            output = output + ("\n" + self.dungeon.rooms[player.currentRoom].npcPlacement[npc])
 
         return output
 
-    def Move(self, userInput):
+    def Move(self, player, userInput):
         if "north" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "north")
-            return "\nYou walk " + "North" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
+            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "north")
+            return "\nYou walk " + "North" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
         elif "east" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "east")
-            return "\nYou walk " + "East" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
+            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "east")
+            return "\nYou walk " + "East" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
         elif "south" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "south")
-            return "\nYou walk " + "South" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
+            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "south")
+            return "\nYou walk " + "South" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
         elif "west" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "west")
-            return "\nYou walk " + "West" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
+            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "west")
+            return "\nYou walk " + "West" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
         # Return empty string to satisfy serverOutput in gameloop.
         # Output here is done in dungeon.Move function.
         return ''
 
-    def Say(self, userInput):
+    def Say(self, player, userInput):
         del userInput[0]
-        return self.player.name + " says '" + ' '.join(userInput) + "'"
+        return player.name + " says '" + ' '.join(userInput) + "'"

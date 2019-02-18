@@ -8,7 +8,7 @@ import threading
 class Dungeon:
 
     # Constructor
-    def __init__(self, name, player):
+    def __init__(self, name):
         # The name of the dungeon
         self.name = name
 
