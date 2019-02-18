@@ -58,7 +58,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Check for messages to display
         if self.game.messageQueue.qsize() > 0:
             displayText = self.game.messageQueue.get()
-            print(displayText)
+            # print(displayText)
             self.textDisplayMain.append(displayText)
 
 
@@ -67,7 +67,6 @@ def main():
     print("Entry point of SUD game.\n\n")
 
     newGame = game.Game(window)
-    #newGame.GameLoop()
 
 
 if __name__ == "__main__":

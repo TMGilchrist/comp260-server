@@ -1,7 +1,7 @@
 from colorama import Fore, Back, Style, init
 import socket
 from Scripts import server
-
+from PyQt5 import QtGui
 
 class InputManager:
 
@@ -27,7 +27,20 @@ class InputManager:
                         + Fore.GREEN + "Examine <object>: " + Fore.RESET + "Attempt to examine an object in your inventory in more detail. \n" \
                         "------------------------------------------------------------------\n"
 
-        # self.helpText2 = "<font color='pink'>%s: %s</font><br>" % "Hello"
+        # Help text, should include commands and useful info.
+        self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \
+                            "<font color='Blue'>General Commands</font><br>" \
+                            "~~~~~~~~~~~~~~~~ <br>" \
+                            "<font color='Green'>Help: </font> Displays this help message. <br>" \
+                            "<font color='Green'>Go <direction>: </font> Move to the room in this direction. <br>" \
+                            "<font color='Green'><direction>: </font> Directions are North, East, South and West. <br>" \
+                            "<font color='Green'>Look: </font> Look at the room around you. <br>" \
+                            "<font color='Green'>Take <object>: </font>Attempt to take an object or item and add it to your inventory. <br>" \
+                            "<font color='Blue'><br>Inventory Menu</font><br>" \
+                            "~~~~~~~~~~~~~~~~ <br>" \
+                            "<font color='Green'>Inventory: </font> Displays your inventory <br>" \
+                            "<font color='Green'>Examine <object>: </font> Attempt to examine an object in your inventory in more detail. <br>" \
+                            "------------------------------------------------------------------<br>"
 
         # If the player is in the inventory menu
         self.inventoryActive = False
@@ -56,7 +69,7 @@ class InputManager:
             return "exit"
 
         elif command == "help":
-            return self.helpText
+            return self.helpTextHTML
 
         # Check for GO command.
         elif command == "go":
@@ -67,6 +80,9 @@ class InputManager:
 
         elif command == "take":
             return self.TakeItem(splitInput)
+
+        elif command == "say":
+            return self.Say(splitInput)
 
         elif command == "inventory":
             self.inventoryActive = True
@@ -166,4 +182,6 @@ class InputManager:
         # Output here is done in dungeon.Move function.
         return ''
 
-
+    def Say(self, userInput):
+        del userInput[0]
+        return self.player.name + " says '" + ' '.join(userInput) + "'"

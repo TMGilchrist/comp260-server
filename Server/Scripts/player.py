@@ -5,10 +5,10 @@ from colorama import Fore, Back, Style, init
 
 class Player(character.Character):
 
-    def __init__(self, name, health, client):
+    def __init__(self, name, health, currentDungeon='', client=''):
         super().__init__(name, health)
 
-        self.dungeon = ''
+        self.dungeon = currentDungeon
         self.currentRoom = ''
         self.inputManager = ''
 
@@ -17,6 +17,8 @@ class Player(character.Character):
 
         # Init colorama
         init()
+
+        self.Setup(self.dungeon)
 
     def Setup(self, currentDungeon):
         self.dungeon = currentDungeon

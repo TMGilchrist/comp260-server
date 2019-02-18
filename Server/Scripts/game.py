@@ -53,8 +53,9 @@ class Game:
         self.Connect()
 
         # Create a player and dungeon
-        self.player = player.Player("NewCharacter", 10, self.client)
         self.dungeon = dungeon.Dungeon(dungeonName, self.player)
+        self.player = player.Player("NewCharacter", 10, self.dungeon, self.client)
+
 
         # Setup rooms for the dungeon
         self.dungeon.SetupDefaultRooms()
@@ -95,10 +96,12 @@ class Game:
                 currentCommand = self.commandQueue.get()
 
                 # Update player client -> used in Dungeon.Move
-                self.player.client = currentCommand[0]
+                #self.player.client = currentCommand[0]
+                #print("Current client: " + str(self.player.client))
 
                 # Process input and create output
-                serverOutput = self.player.inputManager.HandleInput(currentCommand[1].decode("utf-8"))
+                #serverOutput = self.player.inputManager.HandleInput(currentCommand[1].decode("utf-8"))
+                serverOutput = self.dungeon.players[currentCommand[0]].inputManager.HandleInput(currentCommand[1].decode("utf-8"))
 
                 if serverOutput == "exit":
                     # self.gameIsRunning = False
@@ -121,16 +124,23 @@ class Game:
 
     # Thread function
     def AcceptThread(self, serverSocket):
+        clientCount = 0
 
         while True:
             # Get new client
             new_client = serverSocket.accept()
             print("Added client!") # <-- at this point a new player should also be created to map to the client.
 
+            # Update number of connected clients
+            clientCount += 1
+
             # Add new client to dictionary
             self.clientsLock.acquire()
             self.clients[new_client[0]] = 0
             self.clientsLock.release()
+
+            # Add a new player to the dungeon.
+            self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
 
     def ReceiveThread(self, client):
         while self.gameIsRunning:

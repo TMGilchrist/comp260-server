@@ -1,7 +1,8 @@
 from Scripts import room
 from Scripts import server
+from Scripts import player
 from colorama import Fore, Back, Style, init
-
+import threading
 
 # The Dungeon the player explores
 class Dungeon:
@@ -12,10 +13,14 @@ class Dungeon:
         self.name = name
 
         # The player
-        self.player = player
+        # self.player = player
 
         # The rooms of the dungeon.
         self.rooms = {}
+
+        # Dictionary of players. {Client : Player}
+        self.players = {}
+        self.playersLock = threading.Lock()
 
         # Init colorama
         init()
@@ -47,11 +52,15 @@ class Dungeon:
 
         # Check connection is valid
         if newRoomName != "":
-            server.Output(self.player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
+            # server.Output(self.player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom
         else:
-            server.Output(self.player.client, "\nThere is nowhere to go in this direction.")
+            # server.Output(self.player.client, "\nThere is nowhere to go in this direction.")
             return currentRoom
 
+    def AddPlayer(self, client, playerName):
+        self.playersLock.acquire()
+        self.players[client] = player.Player(playerName, 10, self)
+        self.playersLock.release()
