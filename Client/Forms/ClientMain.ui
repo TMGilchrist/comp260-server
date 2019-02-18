@@ -14,16 +14,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTextEdit" name="userInput">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>540</y>
-      <width>591</width>
-      <height>41</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QTextEdit" name="textDisplayMain">
     <property name="geometry">
      <rect>
@@ -38,6 +28,29 @@
     </property>
     <property name="placeholderText">
      <string extracomment="hi"/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="testButton">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>540</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="userInput">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>540</y>
+      <width>591</width>
+      <height>41</height>
+     </rect>
     </property>
    </widget>
   </widget>

@@ -85,42 +85,6 @@ class Game:
 
             self.clientsLock.acquire()
 
-            """"# Iterate over clients
-            for client in self.clients:
-                try:
-                    # testString = str(self.clients[client]) + ":" + time.ctime()
-                    self.clients[client] += 1
-                    # client.send(testString.encode())
-                    # print("Sending: " + testString)
-
-                    print("Process client input")
-                    print(self.clients[client])
-
-                    # Update player client -> used in Dungeon.Move
-                    self.player.client = client
-
-                    # Get input from client
-                    data = client.recv(4096)
-                    print(Fore.GREEN + "Client: " + data.decode("utf-8") + Fore.RESET)
-
-                    # Process input and create output
-                    serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
-
-                    if serverOutput == "exit":
-                        # self.gameIsRunning = False
-                        print("This should disconnect the client but not affect the server.")
-
-                    else:
-                        # Send server output. server.Output returns false if not connected.
-                        print(Fore.GREEN + "Sending output to client" + Fore.RESET)
-                        self.isConnected = server.Output(client, serverOutput)
-
-                except socket.error:
-                    # Record client as lost
-                    self.lostClients.append(client)
-                    print(Fore.RED + "Lost client!" + Fore.RESET)
-            """
-
             # Iterate over clients
             for client in self.clients:
                 # Start a new recieve thread for each client

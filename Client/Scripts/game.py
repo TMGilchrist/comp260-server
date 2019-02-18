@@ -14,18 +14,19 @@ Game class that holds important information for a game including the dungeon and
 
 class Game:
 
-    def __init__(self, networkSocket=''):
+    def __init__(self, qtWindow=''):
         self.gameIsRunning = True
         self.isConnected = False
 
         self.currentInput = ''
 
-        self.networkSocket = networkSocket
+        self.networkSocket = ''
         self.myReceiveThread = ''
 
         # Init colourama
         init()
 
+        self.qtWindow = qtWindow
         self.inputManager = inputManager.InputManager()
 
         # Queue of messages from the server
@@ -94,7 +95,7 @@ class Game:
                     self.isConnected = False
                     print(Fore.RED + "Could not connect to server." + Fore.RESET)
 
-                if(self.isConnected == True):
+                if self.isConnected == True:
                     try:
                         confirmationData = "Client: Client connected to the server"
                         # self.networkSocket.send(confirmationData.encode())
@@ -119,37 +120,14 @@ class Game:
 
                     # Receive response
                     while self.messageQueue.qsize() > 0:
-                        print(self.messageQueue.get())
+                        # print(self.messageQueue.get())
+                        self.qtWindow.textDisplayMain.append(self.messageQueue.get())
 
                 except socket.error:
                     print(Fore.RED + "Server lost." + Fore.RESET)
                     self.isConnected = False
                     self.networkSocket = None
 
-    def Reconnect(self):
-        connected = False
-        self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        while not connected:
-            try:
-                print("Attempting to reconnect.")
-                self.networkSocket.connect(("127.0.0.1", 8222))
-                # self.GetServerOutput()
-                connected = True
-
-            except socket.error:
-                print(Fore.RED + "Unable to connect." + Fore.RESET)
-                time.sleep(1)
-
-    def GetServerOutput(self):
-
-        # Receive startup server output
-        try:
-            data = self.networkSocket.recv(4096)
-            print(data.decode("utf-8"))
-
-        except socket.error:
-            print(Fore.RED + "Server lost." + Fore.RESET)
 
     def receiveThread(self, serverSocket):
         while self.gameIsRunning:
