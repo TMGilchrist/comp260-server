@@ -21,43 +21,46 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Setup timer
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
-        self.timer.start(500)
+        self.timer.start(100)
 
+        # Send startup message
         self.textDisplayMain.append("Window init.")
+
+        """--------------------
+              Listeners
+        --------------------"""
+
         self.testButton.clicked.connect(self.PrintStuff)
 
         # When enter is pressed in input box.
         self.userInput.returnPressed.connect(self.UserInputSubmit)
 
+    # Test function to print stuff
     def PrintStuff(self):
         print("Clicking button")
 
+    # Called when user sends input
     def UserInputSubmit(self):
-        input = self.userInput.text().lower()
+        # Try to send input to server
+        try:
+            newInput = self.userInput.text().lower()
+            print("User input submitted")
+            self.game.networkSocket.send(newInput.encode())
 
-        print("User input submitted")
+        except socket.error:
+            self.textDisplayMain.append("No server.")
 
-        self.game.networkSocket.send(input.encode())
-
+        # Clear input box
         self.userInput.setText("")
 
-
-
+    # Called each timer interval
     def timerEvent(self):
-        print("Timer event")
-
-        # self.textDisplayMain.append("Timer event")
+        # Check for messages to display
         if self.game.messageQueue.qsize() > 0:
-            #print(self.game.messageQueue.get())
-            self.textDisplayMain.append(self.game.messageQueue.get())
+            displayText = self.game.messageQueue.get()
+            print(displayText)
+            self.textDisplayMain.append(displayText)
 
-        # fooVar = self.game.messageQueue.get()
-
-    """def keyPressEvent(self, event):
-        print("keypress event")
-
-        if event.key() == QtCore.Qt.Key_Return:
-            self.textDisplayMain.append("Input")"""
 
 # Entry point of program
 def main():

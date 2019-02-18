@@ -27,6 +27,8 @@ class InputManager:
                         + Fore.GREEN + "Examine <object>: " + Fore.RESET + "Attempt to examine an object in your inventory in more detail. \n" \
                         "------------------------------------------------------------------\n"
 
+        # self.helpText2 = "<font color='pink'>%s: %s</font><br>" % "Hello"
+
         # If the player is in the inventory menu
         self.inventoryActive = False
 

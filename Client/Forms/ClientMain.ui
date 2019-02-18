@@ -13,7 +13,13 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(35, 35, 35);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="cursor">
+    <cursorShape>UpArrowCursor</cursorShape>
+   </property>
    <widget class="QTextEdit" name="textDisplayMain">
     <property name="geometry">
      <rect>
@@ -23,11 +29,19 @@
       <height>491</height>
      </rect>
     </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(66, 66, 66);
+color: rgb(222, 222, 222);
+font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
     </property>
     <property name="placeholderText">
-     <string extracomment="hi"/>
+     <string extracomment="hi">Test</string>
     </property>
    </widget>
    <widget class="QPushButton" name="testButton">
@@ -38,6 +52,9 @@
       <width>91</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
      <string>PushButton</string>
@@ -51,6 +68,11 @@
       <width>591</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(66, 66, 66);
+color: rgb(222, 222, 222);
+font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
     </property>
    </widget>
   </widget>
