@@ -154,46 +154,6 @@ class Game:
             self.clientsLock.release()
             time.sleep(0.5)
 
-        """
-            # Check for client and try to connect if not found
-            if self.isConnected == False:
-                print("Waiting for client")
-                self.client = self.networkSocket.accept()
-                self.player.client = self.client
-
-                # Attempt to get input from client
-                try:
-                    self.isConnected = True
-                    print("Client found")
-
-                    data = self.client[0].recv(4096)
-                    print(data.decode("utf-8"))
-
-                except socket.error:
-                    print("Unable to access client")
-                    self.isConnected = False
-
-            # While connected, process client data and output if possible
-            while self.isConnected == True:
-                try:
-                    print("Process client input")
-
-                    data = self.client[0].recv(4096)
-                    print(data.decode("utf-8"))
-
-                    serverOutput = self.player.inputManager.HandleInput(data.decode("utf-8"))
-
-                    if serverOutput == "exit":
-                        self.gameIsRunning = False
-
-                    else:
-                        # Send server output. server.Output returns false if not connected.
-                        self.isConnected = server.Output(self.client, serverOutput)
-
-                except socket.error:
-                    print("Unable to access client")
-                    self.isConnected = False
-            """
 
     # Thread function
     def AcceptThread(self, serverSocket):

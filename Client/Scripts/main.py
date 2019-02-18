@@ -1,6 +1,24 @@
 from Scripts import game
 import socket
 import time
+import sys
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
+
+qtCreatorFile = "../Forms/testForm.ui"
+
+Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
+
+
+class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        QtWidgets.QMainWindow.__init__(self)
+        Ui_MainWindow.__init__(self)
+        self.setupUi(self)
+
+        self.pushButton.clicked.connect(self.PrintStuff)
+
+    def PrintStuff(self):
+        print("Clicking button")
 
 
 # Entry point of program
@@ -35,5 +53,15 @@ def ClientSetup():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    app = QtWidgets.QApplication(sys.argv)
+    window = MyApp()
+    window.show()
+
+    # Exit application
+    sys.exit(app.exec_())
+
+
+
+
 
