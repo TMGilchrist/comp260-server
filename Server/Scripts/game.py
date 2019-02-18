@@ -100,7 +100,6 @@ class Game:
                 #print("Current client: " + str(self.player.client))
 
                 # Process input and create output
-                #serverOutput = self.player.inputManager.HandleInput(currentCommand[1].decode("utf-8"))
                 serverOutput = self.dungeon.players[currentCommand[0]].inputManager.HandleInput(currentCommand[1].decode("utf-8"))
 
                 if serverOutput == "exit":

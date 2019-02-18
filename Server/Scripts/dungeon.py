@@ -47,17 +47,17 @@ class Dungeon:
         self.startRoom = self.rooms["Entrance"].name
 
     # Move from a room in a direction
-    def Move(self, currentRoom, direction):
+    def Move(self, player, currentRoom, direction):
         newRoomName = self.rooms[currentRoom].connections[direction]
 
         # Check connection is valid
         if newRoomName != "":
-            # server.Output(self.player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
+            #server.Output(player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom
         else:
-            # server.Output(self.player.client, "\nThere is nowhere to go in this direction.")
+            #server.Output(player.client, "\nThere is nowhere to go in this direction.")
             return currentRoom
 
     def AddPlayer(self, client, playerName):

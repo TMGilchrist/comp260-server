@@ -167,16 +167,20 @@ class InputManager:
 
     def Move(self, userInput):
         if "north" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "north")
+            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "north")
+            return "\nYou walk " + "North" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
 
         elif "east" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "east")
+            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "east")
+            return "\nYou walk " + "East" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
 
         elif "south" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "south")
+            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "south")
+            return "\nYou walk " + "South" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
 
         elif "west" in userInput:
-            self.player.currentRoom = self.dungeon.Move(self.player.currentRoom, "west")
+            self.player.currentRoom = self.dungeon.Move(self.player, self.player.currentRoom, "west")
+            return "\nYou walk " + "West" + "\n" + self.dungeon.rooms[self.player.currentRoom].entryDescription
 
         # Return empty string to satisfy serverOutput in gameloop.
         # Output here is done in dungeon.Move function.
