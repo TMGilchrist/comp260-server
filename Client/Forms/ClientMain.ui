@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
+    <width>889</width>
     <height>850</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
    <string>MangoMUD</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(35, 35, 35);</string>
+   <string notr="true">background-color: rgb(188, 160, 115);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="cursor">
@@ -29,6 +29,9 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QVBoxLayout" name="inputLayoutVert">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
       <item>
        <widget class="QTextEdit" name="textDisplayMain">
         <property name="maximumSize">
@@ -36,6 +39,15 @@
           <width>810</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Source Code Pro Black</family>
+          <pointsize>14</pointsize>
+          <weight>10</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="autoFillBackground">
          <bool>false</bool>
@@ -49,12 +61,18 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
          <bool>true</bool>
         </property>
         <property name="placeholderText">
-         <string extracomment="hi">Test</string>
+         <string>You have entered a sandy city. The streets are lined with merchants as you thread your way through a crowded market.</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLineEdit" name="userInput">
+        <property name="maximumSize">
+         <size>
+          <width>810</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true">background-color: rgb(66, 66, 66);
 color: rgb(222, 222, 222);
@@ -65,14 +83,63 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
      </layout>
     </item>
     <item>
-     <widget class="QPushButton" name="testButton">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+     <layout class="QVBoxLayout" name="sideBarLayoutVert" stretch="0,0">
+      <property name="spacing">
+       <number>10</number>
       </property>
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
+      <item>
+       <widget class="QLabel" name="currentRoomLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(127, 91, 43);
+font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignTop">
+       <widget class="QLabel" name="playerNameLabel">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(127, 91, 43);
+font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -81,7 +148,7 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>724</width>
+     <width>889</width>
      <height>21</height>
     </rect>
    </property>

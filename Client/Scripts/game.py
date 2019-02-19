@@ -128,7 +128,6 @@ class Game:
                     self.isConnected = False
                     self.networkSocket = None
 
-
     def receiveThread(self, serverSocket):
         while self.gameIsRunning:
             if self.isConnected:
@@ -143,10 +142,5 @@ class Game:
             else:
                 print(Fore.RED + "No server" + Fore.RESET)
                 time.sleep(5.0)
-
-
-
-
-
 
 

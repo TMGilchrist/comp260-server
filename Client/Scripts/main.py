@@ -30,8 +30,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
               Listeners
         --------------------"""
 
-        self.testButton.clicked.connect(self.PrintStuff)
-
         # When enter is pressed in input box.
         self.userInput.returnPressed.connect(self.UserInputSubmit)
 

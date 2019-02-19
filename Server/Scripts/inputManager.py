@@ -6,8 +6,6 @@ from Scripts import server
 class InputManager:
 
     def __init__(self, dungeon):
-        # Store the player that has instantiated an inputManager
-        # self.player = player
 
         # The current dungeon
         self.dungeon = dungeon
@@ -186,5 +184,14 @@ class InputManager:
         return ''
 
     def Say(self, player, userInput):
+        # Remove the 'say' command from the input.
         del userInput[0]
-        return player.name + " says '" + ' '.join(userInput) + "'"
+        message = ' '.join(userInput)
+
+        # For all other players in the game (excluding the speaker) display the message.
+        for playerClient in self.dungeon.players:
+            if self.dungeon.players[playerClient] != player:
+                server.Output(playerClient, player.name + " says: '" + message + "'")
+
+        # Return the message to be displayed to the speaker.
+        return "You say: '" + message + "'"
