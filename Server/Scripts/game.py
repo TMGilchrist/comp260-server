@@ -48,6 +48,10 @@ class Game:
         # Queue of commands to be processed
         self.commandQueue = Queue()
 
+        # Player/Client active during input/output handling
+        self.activeClient = ''
+        self.activePlayer = ''
+
     def setup(self, dungeonName):
         self.gameIsRunning = True
         self.currentInput = ''
@@ -95,7 +99,11 @@ class Game:
             while self.commandQueue.qsize() > 0:
                 currentCommand = self.commandQueue.get()
 
-                serverOutput = self.inputManager.HandleInput(self.dungeon.players[currentCommand[0]], currentCommand[1].decode("utf-8"))
+                self.activeClient = currentCommand[0]
+                self.activePlayer = self.dungeon.players[self.activeClient]
+
+                serverOutput = self.inputManager.HandleInput(self.activePlayer, currentCommand[1].decode("utf-8"))
+                server.Output(self.activeClient, '#room ' + self.activePlayer.currentRoom)
 
                 if serverOutput == "exit":
                     # self.gameIsRunning = False
@@ -135,6 +143,7 @@ class Game:
 
             # Add a new player to the dungeon.
             self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
+            server.Output(new_client[0], "#name Player " + str(clientCount))
 
     def ReceiveThread(self, client):
         while self.gameIsRunning:

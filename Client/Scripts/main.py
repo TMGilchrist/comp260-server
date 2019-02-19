@@ -55,10 +55,39 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def timerEvent(self):
         # Check for messages to display
         if self.game.messageQueue.qsize() > 0:
-            displayText = self.game.messageQueue.get()
-            # print(displayText)
-            self.textDisplayMain.append(displayText)
+            message = self.game.messageQueue.get()
 
+            if message[0] == '#':
+                self.ParseCommand(message)
+
+            else:
+                # print(message)
+                self.textDisplayMain.append(message)
+
+    # Parse server commands. This could call functions for specific command types - set data etc
+    def ParseCommand(self, commandString):
+        print("parsing command args")
+
+        # Split string by spaces
+        splitString = commandString.split(' ')
+
+        # Get first substring which is the #command and remove from the main string
+        command = splitString[0]
+        del splitString[0]
+
+        # Set the rest of the string to the value being set
+        value = ' '.join(splitString)
+
+        # Change labels to match new values
+        if command == '#name':
+            self.SetLabel(self.playerNameLabel, value)
+
+        elif command == '#room':
+            self.SetLabel(self.currentRoomLabel, value)
+
+    # Updates a labels text
+    def SetLabel(self, labelToSet, newValue):
+        labelToSet.setText(newValue)
 
 # Entry point of program
 def main():
