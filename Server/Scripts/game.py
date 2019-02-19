@@ -147,6 +147,9 @@ class Game:
             # Send player name to the client
             server.Output(new_client[0], "#name Player " + str(clientCount))
 
+            # Delay to prevent messages being appended to each other in the client receive queue? I think?
+            time.sleep(0.001)
+
             # Send roomName to the client. Not very nice being here.
             # Would be nice to do this at the beginning of the gameloop.
             server.Output(new_client[0], '#room ' + self.dungeon.players[new_client[0]].currentRoom)
