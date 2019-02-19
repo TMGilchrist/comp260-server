@@ -131,7 +131,7 @@ class Game:
         while True:
             # Get new client
             new_client = serverSocket.accept()
-            print("Added client!") # <-- at this point a new player should also be created to map to the client.
+            print("Added client!")
 
             # Update number of connected clients
             clientCount += 1
@@ -143,7 +143,13 @@ class Game:
 
             # Add a new player to the dungeon.
             self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
+
+            # Send player name to the client
             server.Output(new_client[0], "#name Player " + str(clientCount))
+
+            # Send roomName to the client. Not very nice being here.
+            # Would be nice to do this at the beginning of the gameloop.
+            server.Output(new_client[0], '#room ' + self.dungeon.players[new_client[0]].currentRoom)
 
     def ReceiveThread(self, client):
         while self.gameIsRunning:
