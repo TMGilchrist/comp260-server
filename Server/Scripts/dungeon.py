@@ -47,7 +47,7 @@ class Dungeon:
         self.startRoom = self.rooms["Entrance"].name
 
     # Move from a room in a direction
-    def Move(self, player, currentRoom, direction):
+    def Move(self, currentRoom, direction):
         newRoomName = self.rooms[currentRoom].connections[direction]
 
         # Check connection is valid

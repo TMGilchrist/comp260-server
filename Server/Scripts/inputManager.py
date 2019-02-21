@@ -47,6 +47,9 @@ class InputManager:
         self.splitInput = ''
         self.command = ''
 
+        # Possible movement directions in the dungeon.
+        self.directions = ["north", "south", "east", "west"]
+
         # Initialise colorama
         init()
 
@@ -71,7 +74,7 @@ class InputManager:
 
         # Check for GO command.
         elif command == "go":
-            return self.Move(player, userInput)
+            return self.Move(player, userInput, splitInput)
 
         elif command == "look":
             return self.Look(player)
@@ -137,7 +140,6 @@ class InputManager:
             output = self.dungeon.rooms[player.currentRoom].items[matches[0]].pickupText
 
             # Add first item that matches to the inventory
-            # self.player.inventory.append(self.dungeon.rooms[self.player.currentRoom].items[matches[0]])
             player.inventory[self.dungeon.rooms[player.currentRoom].items[matches[0]].name] = self.dungeon.rooms[player.currentRoom].items[matches[0]]
 
             # Remove item from the room
@@ -162,26 +164,21 @@ class InputManager:
 
         return output
 
-    def Move(self, player, userInput):
-        if "north" in userInput:
-            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "north")
-            return "\nYou walk " + "North" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+    def Move(self, player, userInput, splitInput):
 
-        elif "east" in userInput:
-            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "east")
-            return "\nYou walk " + "East" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+        # List comprehension to get matches between possible movement directions and input commands.
+        moveDirection = [direction for direction in splitInput if direction in self.directions]
 
-        elif "south" in userInput:
-            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "south")
-            return "\nYou walk " + "South" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+        # Use the first direction command found and move the player.
+        newRoom = self.dungeon.Move(player.currentRoom, moveDirection[0])
 
-        elif "west" in userInput:
-            player.currentRoom = self.dungeon.Move(player, player.currentRoom, "west")
-            return "\nYou walk " + "West" + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+        # Check if the player has actually changed rooms.
+        if player.currentRoom == newRoom:
+            return "\nThere is nowhere to go in this direction."
 
-        # Return empty string to satisfy serverOutput in gameloop.
-        # Output here is done in dungeon.Move function.
-        return ''
+        else:
+            player.currentRoom = newRoom
+            return "\n" + moveDirection[0].capitalize() + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
     def Say(self, player, userInput):
         # Remove the 'say' command from the input.
