@@ -74,7 +74,7 @@ class InputManager:
 
         # Check for GO command.
         elif command == "go":
-            return self.Move(player, userInput, splitInput)
+            return self.Move(player, splitInput)
 
         elif command == "look":
             return self.Look(player)
@@ -164,7 +164,7 @@ class InputManager:
 
         return output
 
-    def Move(self, player, userInput, splitInput):
+    def Move(self, player, splitInput):
 
         # List comprehension to get matches between possible movement directions and input commands.
         moveDirection = [direction for direction in splitInput if direction in self.directions]
