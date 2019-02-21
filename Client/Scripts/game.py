@@ -35,99 +35,7 @@ class Game:
 
         # Connect to the server
 
-    def Connect(self):
-        # While client not connected to a server
-        while self.isConnected == False:
-
-            self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-            # Connect to server
-            try:
-                self.networkSocket.connect(("127.0.0.1", 8222))
-                self.isConnected = True
-                print("Initial server connect successful.")
-
-                self.currentReceiveThread = threading.Thread(target=self.receiveThread, args=(self.networkSocket,))
-                self.currentReceiveThread.start()
-
-            except socket.error:
-                self.isConnected = False
-                print(Fore.RED + "Could not connect to server." + Fore.RESET)
-
-            if self.isConnected == True:
-                try:
-                    confirmationData = "Connected to the server"
-                    # self.networkSocket.send(confirmationData.encode())
-
-                except socket.error:
-                    self.isConnected = False
-                    self.networkSocket = None
-
-            if self.isConnected == False:
-                print(Fore.RED + "No server" + Fore.RESET)
-                time.sleep(1.0)
-
-    # Main game code
-    def GameLoop(self):
-        print("Client gameloop entered.")
-
-        # Get intro output
-        #self.GetServerOutput()
-
-        # Main server loop
-        while self.gameIsRunning:
-
-            # While client not connected to a server
-            while self.isConnected == False:
-                print(Fore.RED + "Not connected." + Fore.RESET)
-
-                # Check if socket is null
-                if self.networkSocket is None:
-                    self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-                # Connect to server
-                try:
-                    self.networkSocket.connect(("127.0.0.1", 8222))
-                    self.isConnected = True
-                    print("Server connect successful.")
-
-                except socket.error:
-                    self.isConnected = False
-                    print(Fore.RED + "Could not connect to server." + Fore.RESET)
-
-                if self.isConnected == True:
-                    try:
-                        confirmationData = "Client: Client connected to the server"
-                        # self.networkSocket.send(confirmationData.encode())
-
-                    except socket.error:
-                        self.isConnected = False
-                        self.networkSocket = None
-
-                if self.isConnected == False:
-                    print(Fore.RED + "No server" + Fore.RESET)
-                    time.sleep(1.0)
-
-            while self.isConnected == True:
-
-                # Get user input
-                self.currentInput = self.inputManager.GetInput("\nYou stand at the ready.")
-
-                try:
-                    # Send input
-                    self.networkSocket.send(self.currentInput.encode())
-                    time.sleep(0.5)
-
-                    # Receive response
-                    while self.messageQueue.qsize() > 0:
-                        # print(self.messageQueue.get())
-                        self.qtWindow.textDisplayMain.append(self.messageQueue.get())
-
-                except socket.error:
-                    print(Fore.RED + "Server lost." + Fore.RESET)
-                    self.isConnected = False
-                    self.networkSocket = None
-
+    # Thread that handles receiving messages from the server and adding them to the message queue.
     def receiveThread(self, serverSocket):
         print(Fore.CYAN + "Receive thread running." + Fore.RESET)
 
@@ -141,10 +49,12 @@ class Game:
                 self.messageQueue.put("<font color=Red>Server lost.</font>")
                 print(Fore.RED + "Server lost." + Fore.RESET)
 
+    # Background thread that handles connection to the server.
     def BackgroundThread(self):
         print(Fore.CYAN + "Background thread running." + Fore.RESET)
         self.isConnected = False
 
+        # When not connected, attempt to connect.
         while self.isConnected is False:
             try:
                 print(Fore.CYAN + "Background Thread: attempting to connect." + Fore.RESET)

@@ -58,16 +58,12 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.game.messageQueue.qsize() > 0:
             message = self.game.messageQueue.get()
 
+            # Check for hash commands.
             if message[0] == '#':
                 self.ParseCommand(message)
 
             else:
-                # print(message)
                 self.textDisplayMain.append(message)
-
-        # Output warning if disconnected from the server.
-        #if self.game.isConnected is False:
-            #self.Disconnected()
 
     # Parse server commands. This could call functions for specific command types - set data etc
     def ParseCommand(self, commandString):
@@ -94,28 +90,23 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def SetLabel(self, labelToSet, newValue):
         labelToSet.setText(newValue)
 
-    def Disconnected(self):
-        #while self.game.isConnected is False:
-
-        self.textDisplayMain.append("<font color='Red'>Lost connection to server. Attempting to reconnect.</font>")
-        time.sleep(1.0)
-
-        # self.textDisplayMain.append("<font color='Cyan'>Reconnect to server successful!</font>")
 
 if __name__ == "__main__":
-    # Create qtApplication
+    # Create qtApplication.
     app = QtWidgets.QApplication(sys.argv)
 
+    # Create new game.
     newGame = game.Game()
 
+    # Start background thread for the game. This handles connection to the server.
     newGame.currentBackgroundThread = threading.Thread(target=newGame.BackgroundThread)
     newGame.currentBackgroundThread.start()
 
-    # Create and show qtWindow
+    # Create and show qtWindow.
     window = MyApp(newGame)
     window.show()
 
-    # Event loop
+    # Event loop.
     sys.exit(app.exec_())
 
 
