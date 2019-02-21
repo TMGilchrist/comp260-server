@@ -90,12 +90,6 @@ class Game:
 
             self.clientsLock.acquire()
 
-            # Iterate over clients
-            for client in self.clients:
-                # Start a new recieve thread for each client
-                newRecieveThread = threading.Thread(target=self.ReceiveThread, args=(client,))
-                newRecieveThread.start()
-
             while self.commandQueue.qsize() > 0:
                 currentCommand = self.commandQueue.get()
 
@@ -126,6 +120,8 @@ class Game:
 
     # Thread function
     def AcceptThread(self, serverSocket):
+        print(Fore.CYAN + "Accept thread running." + Fore.RESET)
+
         clientCount = 0
 
         while True:
@@ -141,6 +137,10 @@ class Game:
             self.clients[new_client[0]] = 0
             self.clientsLock.release()
 
+            # Start a new recieve thread for the client
+            newRecieveThread = threading.Thread(target=self.ReceiveThread, args=(new_client[0],))
+            newRecieveThread.start()
+
             # Add a new player to the dungeon.
             self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
 
@@ -155,7 +155,11 @@ class Game:
             server.Output(new_client[0], '#room ' + self.dungeon.players[new_client[0]].currentRoom)
 
     def ReceiveThread(self, client):
-        while self.gameIsRunning:
+
+        print(Fore.CYAN + "Receive thread running." + Fore.RESET)
+        clientIsValid = True
+
+        while clientIsValid == True:
             try:
                 # Get data from client and store as a tuple.
                 newCommand = (client, client.recv(4096))
@@ -165,8 +169,8 @@ class Game:
 
             except socket.error:
                 print(Fore.RED + "Lost Client" + Fore.RESET)
-                # self.lostClients.append(client)
-                time.sleep(5.0)
+                self.lostClients.append(client)
+                clientIsValid = False
 
 
 

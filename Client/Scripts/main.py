@@ -2,6 +2,7 @@ from Scripts import game
 import socket
 import time
 import sys
+import threading
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 # Get UI file and load as window.
@@ -64,6 +65,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 # print(message)
                 self.textDisplayMain.append(message)
 
+        # Output warning if disconnected from the server.
+        #if self.game.isConnected is False:
+            #self.Disconnected()
+
     # Parse server commands. This could call functions for specific command types - set data etc
     def ParseCommand(self, commandString):
         print("parsing command args")
@@ -89,12 +94,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def SetLabel(self, labelToSet, newValue):
         labelToSet.setText(newValue)
 
-# Entry point of program
-def main():
-    print("Entry point of SUD game.\n\n")
+    def Disconnected(self):
+        #while self.game.isConnected is False:
 
-    newGame = game.Game(window)
+        self.textDisplayMain.append("<font color='Red'>Lost connection to server. Attempting to reconnect.</font>")
+        time.sleep(1.0)
 
+        # self.textDisplayMain.append("<font color='Cyan'>Reconnect to server successful!</font>")
 
 if __name__ == "__main__":
     # Create qtApplication
@@ -102,11 +108,12 @@ if __name__ == "__main__":
 
     newGame = game.Game()
 
+    newGame.currentBackgroundThread = threading.Thread(target=newGame.BackgroundThread)
+    newGame.currentBackgroundThread.start()
+
     # Create and show qtWindow
     window = MyApp(newGame)
     window.show()
-
-    #main()
 
     # Event loop
     sys.exit(app.exec_())
