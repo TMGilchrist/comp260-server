@@ -68,6 +68,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     # Parse server commands. This could call functions for specific command types - set data etc
     def ParseCommand(self, commandString):
         print("parsing command args")
+        print(commandString)
 
         # Split string by spaces
         splitString = commandString.split(' ')

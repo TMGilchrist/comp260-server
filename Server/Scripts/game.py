@@ -10,6 +10,7 @@ from colorama import Fore, init
 import socket
 import time
 import threading
+import sys
 from queue import *
 
 
@@ -69,9 +70,24 @@ class Game:
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.networkSocket.bind(("127.0.0.1", 8222))
+
+        # Attempt to bind to port
+        try:
+            # Use address specified in command line args
+            if len(sys.argv) > 1:
+                self.networkSocket.bind((sys.argv[1], 8222))
+
+            # Use default localhost
+            else:
+                self.networkSocket.bind(("127.0.0.1", 8222))
+
+        except socket.error:
+            print("Cannot start server, another instance of the server may be running.")
+            exit()
+
         self.networkSocket.listen(5)
 
+        # Start the client accept thread.
         self.myAcceptThread = threading.Thread(target=self.AcceptThread, args=(self.networkSocket,))
         self.myAcceptThread.start()
 
@@ -145,14 +161,23 @@ class Game:
             self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
 
             # Send player name to the client
-            server.Output(new_client[0], "#name Player " + str(clientCount))
+            server.Output(new_client[0], "#name Player " + str(clientCount) + "\n")
 
-            # Delay to prevent messages being appended to each other in the client receive queue? I think?
-            time.sleep(0.001)
+            # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
+            time.sleep(0.5)
+
+            # The player associated with the new client
+            newPlayer = self.dungeon.players[new_client[0]]
+
+            # For all other players in the game display who has joined the game..
+            for playerClient in self.dungeon.players:
+                if self.dungeon.players[playerClient] != newPlayer:
+                    server.Output(playerClient, "<font color=Purple>" + newPlayer.name + " has joined the game! </font>")
 
             # Send roomName to the client. Not very nice being here.
             # Would be nice to do this at the beginning of the gameloop.
-            server.Output(new_client[0], '#room ' + self.dungeon.players[new_client[0]].currentRoom)
+            # Added a space before #room to stop the # appending to the player name for some reason.
+            server.Output(new_client[0], '#room ' + newPlayer.currentRoom)
 
     def ReceiveThread(self, client):
 

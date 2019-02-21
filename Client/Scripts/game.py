@@ -2,6 +2,7 @@ from Scripts import inputManager
 import socket
 import time
 import threading
+import sys
 
 from queue import *
 from colorama import Fore, init
@@ -65,7 +66,12 @@ class Game:
 
                 # Connect to server socket
                 try:
-                    self.networkSocket.connect(("127.0.0.1", 8222))
+                    if len(sys.argv) > 1:
+                        self.networkSocket.connect((sys.argv[1], 8222))
+
+                    else:
+                        self.networkSocket.connect(("127.0.0.1", 8222))
+
                     self.isConnected = True
                     print(Fore.CYAN + "Background Thread: Connected to server." + Fore.RESET)
                     self.messageQueue.put("<font color=Cyan>Connected to server.</font>")
