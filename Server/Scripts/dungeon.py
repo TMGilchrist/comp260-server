@@ -33,6 +33,7 @@ class Dungeon:
 
         # Set up pre-defined rooms
         self.defaultRooms = room.DefaultRooms()
+        self.cityRooms = room.DesertCity()
 
         # The room the player will start in
         self.startRoom = ''
@@ -45,6 +46,19 @@ class Dungeon:
 
         # Define which room the player should begin in
         self.startRoom = self.rooms["Entrance"].name
+
+    def SetupCityRooms(self):
+        self.rooms["SouthGate"] = self.cityRooms.SouthGate
+        self.rooms["SouthGateApproach"] = self.cityRooms.SouthGateApproach
+        self.rooms["SouthRoad"] = self.cityRooms.SouthRoad
+        self.rooms["GreatPlaza"] = self.cityRooms.GreatPlaza
+        self.rooms["Market"] = self.cityRooms.Market
+        self.rooms["TempleWay"] = self.cityRooms.TempleWay
+        self.rooms["TempleSteps"] = self.cityRooms.TempleSteps
+        self.rooms["Temple"] = self.cityRooms.Temple
+        self.rooms["PalaceWay"] = self.cityRooms.PalaceWay
+
+        self.startRoom = self.rooms["SouthGateApproach"].name
 
     # Move from a room in a direction
     def Move(self, currentRoom, direction):

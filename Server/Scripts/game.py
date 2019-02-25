@@ -66,7 +66,8 @@ class Game:
         self.inputManager = inputManager.InputManager(self.dungeon)
 
         # Setup rooms for the dungeon
-        self.dungeon.SetupDefaultRooms()
+        #self.dungeon.SetupDefaultRooms()
+        self.dungeon.SetupCityRooms()
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
