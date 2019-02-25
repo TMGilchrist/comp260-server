@@ -178,7 +178,32 @@ class InputManager:
             return "\nThere is nowhere to go in this direction."
 
         else:
+            """
+            # For all other players in the game (excluding the speaker) display the message.
+            for playerClient in self.dungeon.players:
+                if self.dungeon.players[playerClient] != player:
+
+                    # If the message should only be hear by players in the same room
+                    if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
+                        server.Output(playerClient, player.name + " leaves the room.")
+
             player.currentRoom = newRoom
+
+            # For all other players in the game (excluding the speaker) display the message.
+            for playerClient in self.dungeon.players:
+                if self.dungeon.players[playerClient] != player:
+
+                    # If the message should only be hear by players in the same room
+                    if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
+                        server.Output(playerClient, player.name + " enters the room.")
+            """
+
+            self.roomChat(player, player.name + " leaves the room.")
+
+            player.currentRoom = newRoom
+
+            self.roomChat(player, player.name + " enters the room.")
+
             return "\n" + moveDirection[0].capitalize() + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
     def Say(self, player, userInput, roomChat=True):
@@ -199,3 +224,13 @@ class InputManager:
 
         # Return the message to be displayed to the speaker.
         return "You say: '" + message + "'"
+
+    # Outputs a message to all the other players in the same room as the player.
+    def roomChat(self, player, message):
+        # For all other players in the game (excluding the speaker) display the message.
+        for playerClient in self.dungeon.players:
+            if self.dungeon.players[playerClient] != player:
+
+                # If the message should only be hear by players in the same room
+                if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
+                    server.Output(playerClient, message)
