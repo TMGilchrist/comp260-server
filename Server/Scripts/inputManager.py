@@ -31,9 +31,10 @@ class InputManager:
                             "~~~~~~~~~~~~~~~~ <br>" \
                             "<font color='Green'>Help: </font> Displays this help message. <br>" \
                             "<font color='Green'>Go <direction>: </font> Move to the room in this direction. <br>" \
-                            "<font color='Green'><direction>: </font> Directions are North, East, South and West. <br>" \
+                            "<font color='Green'>Direction: </font> Directions are North, East, South and West. <br>" \
                             "<font color='Green'>Look: </font> Look at the room around you. <br>" \
                             "<font color='Green'>Take <object>: </font>Attempt to take an object or item and add it to your inventory. <br>" \
+                            "<font color='Green'>Say: </font>Speak out loud. Other players in the same room will be able to hear you. <br>" \
                             "<font color='Blue'><br>Inventory Menu</font><br>" \
                             "~~~~~~~~~~~~~~~~ <br>" \
                             "<font color='Green'>Inventory: </font> Displays your inventory <br>" \
@@ -180,7 +181,7 @@ class InputManager:
             player.currentRoom = newRoom
             return "\n" + moveDirection[0].capitalize() + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
-    def Say(self, player, userInput):
+    def Say(self, player, userInput, roomChat=True):
         # Remove the 'say' command from the input.
         del userInput[0]
         message = ' '.join(userInput)
@@ -188,7 +189,13 @@ class InputManager:
         # For all other players in the game (excluding the speaker) display the message.
         for playerClient in self.dungeon.players:
             if self.dungeon.players[playerClient] != player:
-                server.Output(playerClient, player.name + " says: '" + message + "'")
+
+                # If the message should only be hear by players in the same room
+                if roomChat is True and (self.dungeon.players[playerClient].currentRoom == player.currentRoom):
+                    server.Output(playerClient, player.name + " says: '" + message + "'")
+
+                elif roomChat is False:
+                    server.Output(playerClient, player.name + " says: '" + message + "'")
 
         # Return the message to be displayed to the speaker.
         return "You say: '" + message + "'"
