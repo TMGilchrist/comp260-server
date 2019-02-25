@@ -67,6 +67,9 @@ class InputManager:
         splitInput = userInput.split(' ')
         command = splitInput[0]
 
+        if command[0] == '#':
+            return self.parseServerCommand(player, command, splitInput)
+
         if command == "exit":
             return "exit"
 
@@ -82,6 +85,9 @@ class InputManager:
 
         elif command == "take":
             return self.TakeItem(player, splitInput)
+
+        elif command == "drop":
+            return self.DropItem(player, splitInput)
 
         elif command == "say":
             return self.Say(player, splitInput)
@@ -151,6 +157,21 @@ class InputManager:
         else:
             return "Unable to take item."
 
+    def DropItem(self, player, splitInput):
+
+        itemName = splitInput[1]
+
+        # Get item from inventory
+        if player.inventory[itemName] is not None:
+            itemToDrop = player.inventory[itemName]
+
+        del player.inventory[itemName]
+
+        # Add item to room
+        self.dungeon.rooms[player.currentRoom].items[itemToDrop.name] = itemToDrop
+
+        return "You drop " + itemToDrop.description
+
     def Look(self, player):
         # Print room description
         output = "\n" + self.dungeon.rooms[player.currentRoom].description
@@ -178,33 +199,13 @@ class InputManager:
             return "\nThere is nowhere to go in this direction."
 
         else:
-            """
-            # For all other players in the game (excluding the speaker) display the message.
-            for playerClient in self.dungeon.players:
-                if self.dungeon.players[playerClient] != player:
-
-                    # If the message should only be hear by players in the same room
-                    if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
-                        server.Output(playerClient, player.name + " leaves the room.")
+            self.messagePlayers(player, player.name + " leaves the room.", True)
 
             player.currentRoom = newRoom
 
-            # For all other players in the game (excluding the speaker) display the message.
-            for playerClient in self.dungeon.players:
-                if self.dungeon.players[playerClient] != player:
+            self.messagePlayers(player, player.name + " enters the room.", True)
 
-                    # If the message should only be hear by players in the same room
-                    if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
-                        server.Output(playerClient, player.name + " enters the room.")
-            """
-
-            self.roomChat(player, player.name + " leaves the room.")
-
-            player.currentRoom = newRoom
-
-            self.roomChat(player, player.name + " enters the room.")
-
-            return "\n" + moveDirection[0].capitalize() + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+            return "\n" + moveDirection[0] + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
     def Say(self, player, userInput, roomChat=True):
         # Remove the 'say' command from the input.
@@ -213,23 +214,40 @@ class InputManager:
 
         # Check if the message should be sent to all players in the dungeon, or just players in the current room.
         if roomChat is True:
-            self.roomChat(player, player.name + " says: '" + message + "'")
+            self.messagePlayers(player, player.name + " says: '" + message + "'", True)
 
         else:
-            # For all other players in the game (excluding the speaker) display the message.
-            for playerClient in self.dungeon.players:
-                if self.dungeon.players[playerClient] != player:
-                    server.Output(playerClient, player.name + " says: '" + message + "'")
+            self.messagePlayers(player, player.name + " says: '" + message + "'", False)
 
         # Return the message to be displayed to the speaker.
         return "You say: '" + message + "'"
 
-    # Outputs a message to all the other players in the same room as the player.
-    def roomChat(self, player, message):
+    # Outputs a message to other players. If sameRoomOnly is set to true, the message is only sent to players
+    # in the same room as the player sending the message.
+    def messagePlayers(self, player, message, sameRoomOnly=True):
         # For all other players in the game (excluding the speaker) display the message.
         for playerClient in self.dungeon.players:
             if self.dungeon.players[playerClient] != player:
 
                 # If the message should only be hear by players in the same room
-                if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
+                if sameRoomOnly is True:
+                    if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
+                        server.Output(playerClient, message)
+                else:
                     server.Output(playerClient, message)
+
+    # Parse specific commands to call server functions.
+    def parseServerCommand(self, player, command, splitInput):
+
+        # Remove the command from the input
+        del splitInput[0]
+        value = ' '.join(splitInput)
+
+        # Change player name
+        if command == '#name':
+            self.messagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
+            player.name = value.capitalize()
+            return "Name changed to " + player.name
+
+
+

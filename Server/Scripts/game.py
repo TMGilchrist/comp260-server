@@ -160,19 +160,19 @@ class Game:
             # Add a new player to the dungeon.
             self.dungeon.AddPlayer(new_client[0], "Player " + str(clientCount))
 
+            # The player associated with the new client
+            newPlayer = self.dungeon.players[new_client[0]]
+
             # Send player name to the client
-            server.Output(new_client[0], "#name Player " + str(clientCount) + "\n")
+            server.Output(new_client[0], "#name " + newPlayer.name + "\n")
 
             # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
             time.sleep(0.5)
 
-            # The player associated with the new client
-            newPlayer = self.dungeon.players[new_client[0]]
-
             # For all other players in the game display who has joined the game..
             for playerClient in self.dungeon.players:
                 if self.dungeon.players[playerClient] != newPlayer:
-                    server.Output(playerClient, "<font color=Purple>" + newPlayer.name + " has joined the game! </font>")
+                    server.Output(playerClient, "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
 
             # Send roomName to the client. Not very nice being here.
             # Would be nice to do this at the beginning of the gameloop.

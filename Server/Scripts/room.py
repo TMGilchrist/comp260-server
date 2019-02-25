@@ -49,9 +49,10 @@ class DefaultRooms:
         self.npcs = npc.Npcs()
 
         self.Entrance = Room("Entrance", "You return to the entrance of the dungeon.",
-                             "You are in a bare stone room with a door to the south. "
+                             "You are in a bare stone room with a door to the South and another to the East. "
                              "Old iron chains hang from the ceiling and clusters of mushrooms grow from cracks in the walls. \n"
-                             "There is a small iron door to the South.",
+                             "There is a small iron door to the South. \n"
+                             "There is a wooden door to the east.",
                              items={"sword": self.gameItems.sword},
                              itemPlacement={"sword": "There is a sword leaning against one wall."},
                              east="Tavern",
