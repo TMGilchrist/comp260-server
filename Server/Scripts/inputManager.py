@@ -211,15 +211,14 @@ class InputManager:
         del userInput[0]
         message = ' '.join(userInput)
 
-        # For all other players in the game (excluding the speaker) display the message.
-        for playerClient in self.dungeon.players:
-            if self.dungeon.players[playerClient] != player:
+        # Check if the message should be sent to all players in the dungeon, or just players in the current room.
+        if roomChat is True:
+            self.roomChat(player, player.name + " says: '" + message + "'")
 
-                # If the message should only be hear by players in the same room
-                if roomChat is True and (self.dungeon.players[playerClient].currentRoom == player.currentRoom):
-                    server.Output(playerClient, player.name + " says: '" + message + "'")
-
-                elif roomChat is False:
+        else:
+            # For all other players in the game (excluding the speaker) display the message.
+            for playerClient in self.dungeon.players:
+                if self.dungeon.players[playerClient] != player:
                     server.Output(playerClient, player.name + " says: '" + message + "'")
 
         # Return the message to be displayed to the speaker.
