@@ -70,11 +70,14 @@ class InputManager:
         if command[0] == '#':
             return self.parseServerCommand(player, command, splitInput)
 
+        if command == "help":
+            return self.helpTextHTML
+
+        if self.inventoryActive is True:
+            return self.InventoryMenu(player, command, splitInput)
+
         if command == "exit":
             return "exit"
-
-        elif command == "help":
-            return self.helpTextHTML
 
         # Check for GO command.
         elif command == "go":
@@ -95,26 +98,15 @@ class InputManager:
         elif command == "inventory":
             self.inventoryActive = True
             return player.CheckInventory()
-            # self.InventoryMenu(player)
 
         else:
             return "No such command - Use 'help' to display a list of commands."
 
-    def InventoryMenu(self, player):
-        self.inventoryActive = True
-
-        # Keep menu open while the user is in the inventory
-        while self.inventoryActive:
-
-            userInput = self.GetInput("\nYou are in your inventory.")
-
-            # Split string into individual words
-            splitInput = userInput.split(' ')
-            command = splitInput[0]
+    def InventoryMenu(self, player, command, splitInput):
 
             if command == "back":
                 self.inventoryActive = False
-                print("\nYou  have left your inventory.")
+                return "\nYou  have left your inventory."
 
             elif command == "examine":
                 # Compare the dictionary keys of items in the room with the input the player has entered, storing matches in a new set.
@@ -124,16 +116,16 @@ class InputManager:
                 matches = list(matchSet)
 
                 if bool(matches):
-                    print(player.inventory[matches[0]].description)
+                    return player.inventory[matches[0]].description
 
                 else:
-                    print("Unable to find item.")
+                    return "Unable to find item."
 
             elif command == "help":
-                print(self.helpText)
+                return self.helpText
 
             else:
-                print("No such command. You are currently in the Inventory Menu - Use 'help' to display a list of commands.")
+                return "No such command. You are currently in the Inventory Menu - Use 'help' to display a list of commands."
 
     def TakeItem(self, player, userInput):
         # Compare the dictionary keys of items in the room with the input the player has entered, storing matches in a new set.

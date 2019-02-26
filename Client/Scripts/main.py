@@ -105,6 +105,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.game.currentReceiveThread is not None:
             self.game.currentReceiveThread.join()
 
+
 if __name__ == "__main__":
     # Create qtApplication.
     app = QtWidgets.QApplication(sys.argv)

@@ -128,7 +128,8 @@ class DesertCity:
                               "The road is almost completely deserted, with only a few people occasionally passing by. The tall buildings give way to gardens lining the street. "
                               "\nTo the North, a huge set of stone steps, paved with bronze, lead upwards towards a huge building. "
                               "\nTo the South, you can see the wide expanse of the Great Plaza.",
-                              south="GreatPlaza")
+                              south="GreatPlaza",
+                              north="TempleSteps")
 
         self.TempleSteps = Room("TempleSteps",
                                 "You begin to walk the bronze steps.",
