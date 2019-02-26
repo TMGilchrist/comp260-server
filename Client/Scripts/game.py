@@ -16,8 +16,8 @@ Game class that holds important information for a game including the dungeon and
 class Game:
 
     def __init__(self, qtWindow=''):
-        self.gameIsRunning = True
         self.isConnected = False
+        self.clientIsRunning = True
 
         self.currentInput = ''
 
@@ -56,7 +56,7 @@ class Game:
         self.isConnected = False
 
         # When not connected, attempt to connect.
-        while self.isConnected is False:
+        while (self.isConnected is False) and (self.clientIsRunning is True):
             try:
                 print(Fore.CYAN + "Background Thread: attempting to connect." + Fore.RESET)
                 self.messageQueue.put("<font color=Cyan>Attempting to connect to server.</font>")

@@ -91,6 +91,19 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def SetLabel(self, labelToSet, newValue):
         labelToSet.setText(newValue)
 
+    def closeEvent(self, event):
+
+        self.game.networkSocket.close()
+        self.game.networkSocket = None
+
+        self.game.isConnected = False
+        self.game.clientIsRunning = False
+
+        if self.game.currentBackgroundThread is not None:
+            self.game.currentBackgroundThread.join()
+
+        if self.game.currentReceiveThread is not None:
+            self.game.currentReceiveThread.join()
 
 if __name__ == "__main__":
     # Create qtApplication.
