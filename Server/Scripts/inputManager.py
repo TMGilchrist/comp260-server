@@ -176,6 +176,11 @@ class InputManager:
         for npc in self.dungeon.rooms[player.currentRoom].npcs:
             output = output + ("\n" + self.dungeon.rooms[player.currentRoom].npcPlacement[npc])
 
+        # Check for other players
+        for playerClient in self.dungeon.players:
+            if (self.dungeon.players[playerClient].currentRoom == player.currentRoom) and (self.dungeon.players[playerClient] != player):
+                output = output + ("\n" + self.dungeon.players[playerClient].name + " is standing nearby.")
+
         return output
 
     def Move(self, player, splitInput):
@@ -183,21 +188,24 @@ class InputManager:
         # List comprehension to get matches between possible movement directions and input commands.
         moveDirection = [direction for direction in splitInput if direction in self.directions]
 
-        # Use the first direction command found and move the player.
-        newRoom = self.dungeon.Move(player.currentRoom, moveDirection[0])
+        if len(moveDirection) > 0:
+            # Use the first direction command found and move the player.
+            newRoom = self.dungeon.Move(player.currentRoom, moveDirection[0])
 
-        # Check if the player has actually changed rooms.
-        if player.currentRoom == newRoom:
-            return "\nThere is nowhere to go in this direction."
+            # Check if the player has actually changed rooms.
+            if player.currentRoom == newRoom:
+                return "\nThere is nowhere to go in this direction."
 
-        else:
-            self.messagePlayers(player, player.name + " leaves the room.", True)
+            else:
+                self.messagePlayers(player, player.name + " leaves the room.", True)
 
-            player.currentRoom = newRoom
+                player.currentRoom = newRoom
 
-            self.messagePlayers(player, player.name + " enters the room.", True)
+                self.messagePlayers(player, player.name + " enters the room.", True)
 
-            return "\n" + moveDirection[0] + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+                return "\n" + moveDirection[0] + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+
+        return "Please enter a valid direction."
 
     def Say(self, player, userInput, roomChat=True):
         # Remove the 'say' command from the input.
