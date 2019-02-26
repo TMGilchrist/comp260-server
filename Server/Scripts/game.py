@@ -4,6 +4,8 @@ from Scripts import player
 from Scripts import dungeon
 from Scripts import server
 from Scripts import inputManager
+from Scripts import aiInputManager
+from Scripts import npcAgent
 
 from colorama import Fore, init
 
@@ -29,6 +31,7 @@ class Game:
         self.dungeon = ''
 
         self.inputManager = ''
+        self.aiInputManager = ''
 
         # Init colourama
         init()
@@ -53,6 +56,9 @@ class Game:
         self.activeClient = ''
         self.activePlayer = ''
 
+        # Test Agent
+        self.testAgent = npcAgent.NpcAgent("TestAI", 1, "A test npc.", '')
+
     def setup(self, dungeonName):
         self.gameIsRunning = True
         self.currentInput = ''
@@ -64,10 +70,14 @@ class Game:
 
         # Create inputManager
         self.inputManager = inputManager.InputManager(self.dungeon)
+        self.aiInputManager = aiInputManager.AiInputManager(self.dungeon)
 
         # Setup rooms for the dungeon
-        #self.dungeon.SetupDefaultRooms()
+        # self.dungeon.SetupDefaultRooms()
         self.dungeon.SetupCityRooms()
+
+        self.testAgent.currentRoom = self.dungeon.startRoom
+        self.dungeon.agents["TestAgent"] = self.testAgent
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -105,6 +115,8 @@ class Game:
         while self.gameIsRunning:
             self.lostClients = []
 
+            self.HandleAgents()
+
             self.clientsLock.acquire()
 
             while self.commandQueue.qsize() > 0:
@@ -114,7 +126,7 @@ class Game:
                 self.activePlayer = self.dungeon.players[self.activeClient]
 
                 # Process user command into output.
-                serverOutput = self.inputManager.HandleInput(self.activePlayer, currentCommand[1].decode("utf-8"))
+                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1].decode("utf-8"))
 
                 # Update player room label
                 server.Output(self.activeClient, '#room ' + self.activePlayer.currentRoom)
@@ -199,6 +211,10 @@ class Game:
                 self.lostClients.append(client)
                 clientIsValid = False
 
+    def HandleAgents(self):
+        # self.inputManager.HandleInput('', self.testAgent, "go north")
+        # self.aiInputManager.HandleInput(self.testAgent, "go north")
+        pass
 
 
 

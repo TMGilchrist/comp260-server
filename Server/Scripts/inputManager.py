@@ -54,13 +54,13 @@ class InputManager:
         # Initialise colorama
         init()
 
-    def GetInput(self, player, inputTitle=''):
+    def GetInput(self, inputTitle=''):
         print(inputTitle)
         newInput = input(Fore.MAGENTA + "Enter a command: " + Fore.RESET)
 
         return newInput.lower()
 
-    def HandleInput(self, player, userInput):
+    def HandleInput(self, playerClient, player, userInput):
         print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
         # Split string into individual words
@@ -68,7 +68,7 @@ class InputManager:
         command = splitInput[0]
 
         if command[0] == '#':
-            return self.parseServerCommand(player, command, splitInput)
+            return self.parseServerCommand(playerClient, player, command, splitInput)
 
         if command == "help":
             return self.helpTextHTML
@@ -176,6 +176,11 @@ class InputManager:
         for npc in self.dungeon.rooms[player.currentRoom].npcs:
             output = output + ("\n" + self.dungeon.rooms[player.currentRoom].npcPlacement[npc])
 
+        # Check for ai agents
+        for agent in self.dungeon.agents:
+            if self.dungeon.agents[agent].currentRoom == player.currentRoom:
+                output = output + ("\n" + self.dungeon.agents[agent].name + " is in the room.")
+
         # Check for other players
         for playerClient in self.dungeon.players:
             if (self.dungeon.players[playerClient].currentRoom == player.currentRoom) and (self.dungeon.players[playerClient] != player):
@@ -237,7 +242,7 @@ class InputManager:
                     server.Output(playerClient, message)
 
     # Parse specific commands to call server functions.
-    def parseServerCommand(self, player, command, splitInput):
+    def parseServerCommand(self, playerClient, player, command, splitInput):
 
         # Remove the command from the input
         del splitInput[0]
@@ -247,7 +252,7 @@ class InputManager:
         if command == '#name':
             self.messagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
             player.name = value.capitalize()
-            #server.Output("#name " + player.name) broken!!!! needs player client.!
+            # server.Output(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
 
 

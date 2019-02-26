@@ -22,6 +22,9 @@ class Dungeon:
         self.players = {}
         self.playersLock = threading.Lock()
 
+        # Dictionary of ai agents
+        self.agents = {}
+
         # Init colorama
         init()
 
