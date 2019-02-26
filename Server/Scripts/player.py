@@ -10,7 +10,6 @@ class Player(character.Character):
 
         self.dungeon = currentDungeon
         self.currentRoom = ''
-        # self.inputManager = ''
 
         self.inventory = {}
         self.client = client
@@ -25,9 +24,6 @@ class Player(character.Character):
 
         # The room the player is currently in. Set to the start room when the player starts the game.
         self.currentRoom = self.dungeon.startRoom
-
-        # InputManager to handle typing
-        # self.inputManager = inputManager.InputManager(self.dungeon)
 
     def CheckInventory(self):
 

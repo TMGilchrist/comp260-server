@@ -12,6 +12,7 @@ Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 # PyQT application.
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
+
     def __init__(self, game):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
@@ -91,6 +92,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def SetLabel(self, labelToSet, newValue):
         labelToSet.setText(newValue)
 
+    # Called when the user closes the application window.
     def closeEvent(self, event):
 
         self.game.networkSocket.close()

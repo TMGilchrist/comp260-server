@@ -113,7 +113,10 @@ class Game:
                 self.activeClient = currentCommand[0]
                 self.activePlayer = self.dungeon.players[self.activeClient]
 
+                # Process user command into output.
                 serverOutput = self.inputManager.HandleInput(self.activePlayer, currentCommand[1].decode("utf-8"))
+
+                # Update player room label
                 server.Output(self.activeClient, '#room ' + self.activePlayer.currentRoom)
 
                 if serverOutput == "exit":
@@ -126,14 +129,12 @@ class Game:
                     print(Fore.GREEN + serverOutput + Fore.RESET)
                     self.isConnected = server.Output(currentCommand[0], serverOutput)
 
-
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
                 self.clients.pop(client)
 
             self.clientsLock.release()
             time.sleep(0.5)
-
 
     # Thread function
     def AcceptThread(self, serverSocket):
@@ -190,7 +191,7 @@ class Game:
                 # Get data from client and store as a tuple.
                 newCommand = (client, client.recv(4096))
 
-                #Add to queue
+                # Add to queue
                 self.commandQueue.put(newCommand)
 
             except socket.error:

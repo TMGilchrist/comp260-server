@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>889</width>
+    <width>1033</width>
     <height>850</height>
    </rect>
   </property>
@@ -103,7 +103,7 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
         </property>
         <property name="maximumSize">
          <size>
-          <width>100</width>
+          <width>200</width>
           <height>100</height>
          </size>
         </property>
@@ -126,7 +126,7 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
         </property>
         <property name="maximumSize">
          <size>
-          <width>100</width>
+          <width>200</width>
           <height>200</height>
          </size>
         </property>
@@ -148,7 +148,7 @@ font: 87 14pt &quot;Source Code Pro Black&quot;;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>889</width>
+     <width>1033</width>
      <height>21</height>
     </rect>
    </property>

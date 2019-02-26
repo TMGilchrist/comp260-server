@@ -239,6 +239,7 @@ class InputManager:
         if command == '#name':
             self.messagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
             player.name = value.capitalize()
+            #server.Output("#name " + player.name) broken!!!! needs player client.!
             return "Name changed to " + player.name
 
 
