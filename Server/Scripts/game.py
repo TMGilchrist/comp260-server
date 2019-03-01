@@ -24,10 +24,11 @@ Game class that holds important information for a game including the dungeon and
 class Game:
 
     def __init__(self, client=''):
+        # Legacy
         self.gameIsRunning = ''
         self.isConnected = ''
-
         self.currentInput = ''
+
         self.dungeon = ''
 
         self.inputManager = ''

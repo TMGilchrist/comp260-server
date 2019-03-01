@@ -27,18 +27,21 @@ class InputManager:
 
         # Help text, should include commands and useful info.
         self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \
-                            "<font color='Blue'>General Commands</font><br>" \
+                            "<font color=Brown>General Commands</font><br>" \
                             "~~~~~~~~~~~~~~~~ <br>" \
                             "<font color='Green'>Help: </font> Displays this help message. <br>" \
-                            "<font color='Green'>Go <direction>: </font> Move to the room in this direction. <br>" \
-                            "<font color='Green'>Direction: </font> Directions are North, East, South and West. <br>" \
+                            "<font color='Green'>Go <direction>: </font> Move to the room in this direction. Directions are North, East, South and West. <br>" \
                             "<font color='Green'>Look: </font> Look at the room around you. <br>" \
                             "<font color='Green'>Take <object>: </font>Attempt to take an object or item and add it to your inventory. <br>" \
+                            "<font color='Green'>Drop <object>: </font>Attempt to drop an object or item from your inventory. <br>" \
                             "<font color='Green'>Say: </font>Speak out loud. Other players in the same room will be able to hear you. <br>" \
-                            "<font color='Blue'><br>Inventory Menu</font><br>" \
+                            "<br><font color=Brown><br>Inventory Menu</font><br>" \
                             "~~~~~~~~~~~~~~~~ <br>" \
                             "<font color='Green'>Inventory: </font> Displays your inventory <br>" \
                             "<font color='Green'>Examine <object>: </font> Attempt to examine an object in your inventory in more detail. <br>" \
+                            "<br><font color=Brown>Server Commands</font><br>" \
+                            "~~~~~~~~~~~~~~~~ <br>" \
+                            "<font color='Green'>#name <newName></font> Changes your display name. <br>" \
                             "------------------------------------------------------------------<br>"
 
         # If the player is in the inventory menu
@@ -166,7 +169,7 @@ class InputManager:
 
     def Look(self, player):
         # Print room description
-        output = "\n" + self.dungeon.rooms[player.currentRoom].description
+        output = "<br><font color=magenta>You look around.</font> <br>" + self.dungeon.rooms[player.currentRoom].description
 
         # Check for items
         for item in self.dungeon.rooms[player.currentRoom].items:
@@ -208,7 +211,7 @@ class InputManager:
 
                 self.messagePlayers(player, player.name + " enters the room.", True)
 
-                return "\n" + moveDirection[0] + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
+                return "\n" + "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
 
         return "Please enter a valid direction."
 

@@ -28,7 +28,7 @@ class Player(character.Character):
     def CheckInventory(self):
 
         output = ("<br>------------------------<br> "
-                  "<font color='magenta'>Inventory: </font>" + str(len(self.inventory)) + " items <br>")
+                  "<font color=Brown>Inventory: </font>" + str(len(self.inventory)) + " items <br>")
 
         for item in self.inventory:
             output += (" - " + item + "<br>")
