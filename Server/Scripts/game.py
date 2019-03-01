@@ -26,8 +26,6 @@ class Game:
     def __init__(self, client=''):
         # Legacy
         self.gameIsRunning = ''
-        self.isConnected = ''
-        self.currentInput = ''
 
         self.dungeon = ''
 
@@ -62,7 +60,6 @@ class Game:
 
     def setup(self, dungeonName):
         self.gameIsRunning = True
-        self.currentInput = ''
 
         self.Connect()
 
@@ -129,8 +126,8 @@ class Game:
                 # Process user command into output.
                 serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1].decode("utf-8"))
 
-                # Update player room label
-                server.Output(self.activeClient, '#room ' + self.activePlayer.currentRoom)
+                if serverOutput is None:
+                    serverOutput = "An error has occurred that left serverOutput as NoneType."
 
                 if serverOutput == "exit":
                     # self.gameIsRunning = False
@@ -140,7 +137,7 @@ class Game:
                     # Send server output. server.Output returns false if not connected.
                     print(Fore.GREEN + "Sending output to client" + Fore.RESET)
                     print(Fore.GREEN + serverOutput + Fore.RESET)
-                    self.isConnected = server.Output(currentCommand[0], serverOutput)
+                    server.Output(currentCommand[0], serverOutput)
 
             # Remove lost clients from clients dictionary
             for client in self.lostClients:

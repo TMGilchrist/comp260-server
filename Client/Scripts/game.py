@@ -19,8 +19,6 @@ class Game:
         self.isConnected = False
         self.clientIsRunning = True
 
-        self.currentInput = ''
-
         self.networkSocket = ''
         self.currentReceiveThread = ''
         self.currentBackgroundThread = ''
@@ -33,8 +31,6 @@ class Game:
 
         # Queue of messages from the server
         self.messageQueue = Queue()
-
-        # Connect to the server
 
     # Thread that handles receiving messages from the server and adding them to the message queue.
     def receiveThread(self, serverSocket):

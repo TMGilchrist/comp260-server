@@ -5,22 +5,20 @@ from colorama import Fore, Back, Style, init
 
 class Player(character.Character):
 
-    def __init__(self, name, health, currentDungeon='', client=''):
+    def __init__(self, name, health, currentDungeon):
         super().__init__(name, health)
 
         self.dungeon = currentDungeon
         self.currentRoom = ''
 
         self.inventory = {}
-        self.client = client
 
         # Init colorama
         init()
 
-        self.Setup(self.dungeon)
+        self.Setup()
 
-    def Setup(self, currentDungeon):
-        self.dungeon = currentDungeon
+    def Setup(self):
 
         # The room the player is currently in. Set to the start room when the player starts the game.
         self.currentRoom = self.dungeon.startRoom

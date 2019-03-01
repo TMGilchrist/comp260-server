@@ -68,8 +68,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Parse server commands. This could call functions for specific command types - set data etc
     def ParseCommand(self, commandString):
-        print("parsing command args")
-        print(commandString)
+        print("Parsing command args")
+        print("Command string = " + commandString)
 
         # Split string by spaces
         splitString = commandString.split(' ')
@@ -80,6 +80,14 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Set the rest of the string to the value being set
         value = ' '.join(splitString)
+
+        # Get value of first #command. Any others are discarded.
+        # This prevents overlap of server commands.
+        value = commandString.split('#')[1]
+        value = value.split(' ')
+        del value[0]
+        value = ' '.join(value)
+        print("Value = " + value)
 
         # Change labels to match new values
         if command == '#name':

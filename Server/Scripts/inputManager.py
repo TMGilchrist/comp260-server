@@ -57,12 +57,6 @@ class InputManager:
         # Initialise colorama
         init()
 
-    def GetInput(self, inputTitle=''):
-        print(inputTitle)
-        newInput = input(Fore.MAGENTA + "Enter a command: " + Fore.RESET)
-
-        return newInput.lower()
-
     def HandleInput(self, playerClient, player, userInput):
         print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
@@ -71,7 +65,7 @@ class InputManager:
         command = splitInput[0]
 
         if command[0] == '#':
-            return self.parseServerCommand(playerClient, player, command, splitInput)
+            return self.ParseServerCommand(playerClient, player, command, splitInput)
 
         if command == "help":
             return self.helpTextHTML
@@ -84,7 +78,7 @@ class InputManager:
 
         # Check for GO command.
         elif command == "go":
-            return self.Move(player, splitInput)
+            return self.Move(playerClient, player, splitInput)
 
         elif command == "look":
             return self.Look(player)
@@ -154,7 +148,11 @@ class InputManager:
 
     def DropItem(self, player, splitInput):
 
-        itemName = splitInput[1]
+        try:
+            itemName = splitInput[1]
+
+        except IndexError:
+            return "No item specified."
 
         # Get item from inventory
         if player.inventory[itemName] is not None:
@@ -173,25 +171,25 @@ class InputManager:
 
         # Check for items
         for item in self.dungeon.rooms[player.currentRoom].items:
-            output = output + ("\n" + self.dungeon.rooms[player.currentRoom].itemPlacement[item])
+            output = output + ("<br>" + self.dungeon.rooms[player.currentRoom].itemPlacement[item])
 
         # Check for npcs
         for npc in self.dungeon.rooms[player.currentRoom].npcs:
-            output = output + ("\n" + self.dungeon.rooms[player.currentRoom].npcPlacement[npc])
+            output = output + ("<br>" + self.dungeon.rooms[player.currentRoom].npcPlacement[npc])
 
         # Check for ai agents
         for agent in self.dungeon.agents:
             if self.dungeon.agents[agent].currentRoom == player.currentRoom:
-                output = output + ("\n" + self.dungeon.agents[agent].name + " is in the room.")
+                output = output + ("<br>" + self.dungeon.agents[agent].name + " is in the room.")
 
         # Check for other players
         for playerClient in self.dungeon.players:
             if (self.dungeon.players[playerClient].currentRoom == player.currentRoom) and (self.dungeon.players[playerClient] != player):
-                output = output + ("\n" + self.dungeon.players[playerClient].name + " is standing nearby.")
+                output = output + ("<br>" + self.dungeon.players[playerClient].name + " is standing nearby.")
 
         return output
 
-    def Move(self, player, splitInput):
+    def Move(self, playerClient, player, splitInput):
 
         # List comprehension to get matches between possible movement directions and input commands.
         moveDirection = [direction for direction in splitInput if direction in self.directions]
@@ -205,11 +203,14 @@ class InputManager:
                 return "\nThere is nowhere to go in this direction."
 
             else:
-                self.messagePlayers(player, player.name + " leaves the room.", True)
+                self.MessagePlayers(player, player.name + " leaves the room.", True)
 
                 player.currentRoom = newRoom
 
-                self.messagePlayers(player, player.name + " enters the room.", True)
+                self.MessagePlayers(player, player.name + " enters the room.", True)
+
+                # Update room label
+                server.Output(playerClient, '#room ' + player.currentRoom)
 
                 return "\n" + "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
 
@@ -222,17 +223,17 @@ class InputManager:
 
         # Check if the message should be sent to all players in the dungeon, or just players in the current room.
         if roomChat is True:
-            self.messagePlayers(player, player.name + " says: '" + message + "'", True)
+            self.MessagePlayers(player, player.name + " says: '" + message + "'", True)
 
         else:
-            self.messagePlayers(player, player.name + " says: '" + message + "'", False)
+            self.MessagePlayers(player, player.name + " says: '" + message + "'", False)
 
         # Return the message to be displayed to the speaker.
         return "You say: '" + message + "'"
 
     # Outputs a message to other players. If sameRoomOnly is set to true, the message is only sent to players
     # in the same room as the player sending the message.
-    def messagePlayers(self, player, message, sameRoomOnly=True):
+    def MessagePlayers(self, player, message, sameRoomOnly=True):
         # For all other players in the game (excluding the speaker) display the message.
         for playerClient in self.dungeon.players:
             if self.dungeon.players[playerClient] != player:
@@ -245,18 +246,34 @@ class InputManager:
                     server.Output(playerClient, message)
 
     # Parse specific commands to call server functions.
-    def parseServerCommand(self, playerClient, player, command, splitInput):
+    def ParseServerCommand(self, playerClient, player, command, splitInput):
 
         # Remove the command from the input
         del splitInput[0]
         value = ' '.join(splitInput)
+        print("Value = " + value)
+
+        # Ignore any further hash commands.
+        removeHash = value.split('#')
+        print("removeHash = " + value)
+
+        value = removeHash[0]
+        print("Value = " + value)
+
+        # Check for  null value.
+        if value is None:
+            return "No command entered after #"
 
         # Change player name
         if command == '#name':
-            self.messagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
+            self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
             player.name = value.capitalize()
-            # server.Output(playerClient, "#name " + player.name)
+            print("player name value = " + value)
+            server.Output(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
+
+        else:
+            return "No such command found."
 
 
 

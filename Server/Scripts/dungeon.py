@@ -12,9 +12,6 @@ class Dungeon:
         # The name of the dungeon
         self.name = name
 
-        # The player
-        # self.player = player
-
         # The rooms of the dungeon.
         self.rooms = {}
 
