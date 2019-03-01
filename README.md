@@ -1,3 +1,19 @@
 # comp260-server
 
-sys.exit not working -> need to join threads to prevent them from blocking system exit.
+## Overview
+
+## UML
+
+### State Diagram
+
+![](StateDiagrams.png)
+
+### Sequence Diagram
+![](SequenceDiagram.png)
+
+### Server Class Hierarchy
+![](ServerDiagram.png)
+
+### Client Class Hierarchy
+![](ClientDiagram.png)
+
