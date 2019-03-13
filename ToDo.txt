@@ -1,2 +1,4 @@
 Fix crash when picking up/dropping items due to the item location string in rooms.
 This string should probably be moved onto the item so it can always be accessed.
+
+AIinputManager should inherit from inputManager and overload functions that require changing to reduce code duplication!

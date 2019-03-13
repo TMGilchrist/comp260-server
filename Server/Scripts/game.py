@@ -11,6 +11,7 @@ from colorama import Fore, init
 
 import socket
 import time
+import random
 import threading
 import sys
 from queue import *
@@ -55,8 +56,13 @@ class Game:
         self.activeClient = ''
         self.activePlayer = ''
 
-        # Test Agent
-        self.testAgent = npcAgent.NpcAgent("TestAI", 1, "A test npc.", '')
+        # Agent builder class
+        self.aiBuilder = ''
+
+        # Create ai agents.
+        #self.guardAgent = npcAgent.NpcAgent("City Guard", 1, "A guard of the city.", "SouthGate")
+        #self.merchantAgent = npcAgent.NpcAgent("Spice Merchant", 1, "A merchant in rich silks.", "Market")
+        #self.citizenAgent = npcAgent.NpcAgent("Citizen", 1, "An ordinary citizen.", "SouthRoad")
 
     def setup(self, dungeonName):
         self.gameIsRunning = True
@@ -74,10 +80,19 @@ class Game:
         # self.dungeon.SetupDefaultRooms()
         self.dungeon.SetupCityRooms()
 
-        self.testAgent.currentRoom = "GreatPlaza"#self.dungeon.startRoom
-        self.dungeon.agents["TestAgent"] = self.testAgent
-        self.SetupAgentThreads()
+        # Setup agent values.
+        #self.guardAgent.currentRoom = self.guardAgent.home
+        #self.dungeon.agents[self.guardAgent.name] = self.guardAgent
 
+        # Create aiBuilder
+        self.aiBuilder = npcAgent.AgentBuilder(self.dungeon)
+
+        # Build and setup agents.
+        self.aiBuilder.BuildAgents()
+        self.aiBuilder.SetUpAgents()
+
+        # Create processing threads for each agent in the game.
+        self.CreateAgentThreads()
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -212,33 +227,28 @@ class Game:
                 self.lostClients.append(client)
                 clientIsValid = False
 
-    def HandleAgents(self):
-        # self.aiInputManager.HandleInput(self.testAgent, "go north")
-
-        self.aiInputManager.GetOptions(self.testAgent)
-        self.aiInputManager.MakeChoice(self.testAgent)
-        self.testAgent.ClearOptions()
-
-        pass
-
-    def SetupAgentThreads(self):
-        # For each agent in the dungeon, start a new thread.
-        for agent in self.dungeon.agents:
-            newAgentThread = threading.Thread(target=self.HandleAgentThread, args=(self.dungeon.agents[agent],))
-            newAgentThread.start()
-
     # Thread that handles processing for each ai.
+
     def HandleAgentThread(self, agent):
 
         handleAgent = True
 
         while handleAgent is True:
+            # Get possible options in the current room.
             self.aiInputManager.GetOptions(agent)
 
-            self.aiInputManager.MakeChoice(agent)
-            time.sleep(2.0)
+            # Make a choice and wait based on the choice made.
+            time.sleep(self.aiInputManager.MakeChoice(agent))
 
-            self.testAgent.ClearOptions()
+            time.sleep(random.randint(1, 3))
+
+    # Creates threads for each agent in the game so each one can process commands individually.
+    def CreateAgentThreads(self):
+
+        # For each agent in the dungeon, start a new thread.
+        for agent in self.dungeon.agents:
+            newAgentThread = threading.Thread(target=self.HandleAgentThread, args=(self.dungeon.agents[agent],))
+            newAgentThread.start()
 
 
 

@@ -48,11 +48,11 @@ class AiInputManager:
                 return "\nThere is nowhere to go in this direction."
 
             else:
-                self.MessagePlayers(player, player.name + " leaves the room.", True)
+                self.MessagePlayers(player, "<font color=red>" + player.name + " leaves the room, heading " + moveDirection[0] + ". </font>", True)
 
                 player.currentRoom = newRoom
 
-                self.MessagePlayers(player, player.name + " enters the room.", True)
+                self.MessagePlayers(player, "<font color=orange>" + player.name + " enters the room from the " + moveDirection[0] + ". </font>", True)
 
                 return "\n" + moveDirection[0] + "\n" + self.dungeon.rooms[player.currentRoom].entryDescription
 
@@ -60,6 +60,9 @@ class AiInputManager:
 
     # Check the current room for connections and add valid paths as options for the agent to take.
     def GetOptions(self, player):
+        # Clear any current options.
+        player.options.clear()
+
         print("Possible commands from this room.")
 
         for connection in self.dungeon.rooms[player.currentRoom].connections:
@@ -78,16 +81,21 @@ class AiInputManager:
 
         print("Choice: " + optionChoice)
 
+        # Wait in room.
         if optionChoice == "wait":
             print("Waiting in room")
             print(Fore.CYAN + "AI current room: " + player.currentRoom + "\n" + Fore.RESET)
-            #time.sleep(2.0)
 
+            timeToWait = 4
+            return timeToWait
+
+        # Move to new room.
         else:
             print("Moving " + optionChoice)
             self.Move(player, ["go", optionChoice])
             print(Fore.CYAN + "AI current room: " + player.currentRoom + "\n" + Fore.RESET)
-            #time.sleep(2.0)
+            timeToWait = 1
+            return timeToWait
 
     # Outputs a message to other players. If sameRoomOnly is set to true, the message is only sent to players
     # in the same room as the player sending the message.
