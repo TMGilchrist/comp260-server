@@ -162,6 +162,7 @@ class InputManager:
 
         # Add item to room
         self.dungeon.rooms[player.currentRoom].items[itemToDrop.name] = itemToDrop
+        self.dungeon.rooms[player.currentRoom].itemPlacement[itemToDrop.name] = "There is a " + itemToDrop.name + " on the ground."
 
         return "You drop " + itemToDrop.description
 

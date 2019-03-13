@@ -1,0 +1,2 @@
+Fix crash when picking up/dropping items due to the item location string in rooms.
+This string should probably be moved onto the item so it can always be accessed.

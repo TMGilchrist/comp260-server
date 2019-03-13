@@ -10,5 +10,14 @@ class NpcAgent(npc.Npc):
         self.home = home
         self.currentRoom = ''
 
+        # List of possible commands.
+        self.options = []
+
+    # Clear the list of options
+    def ClearOptions(self):
+        self.options.clear()
+
     def Move(self):
         print("")
+
+

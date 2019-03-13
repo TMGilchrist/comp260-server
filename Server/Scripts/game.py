@@ -74,8 +74,10 @@ class Game:
         # self.dungeon.SetupDefaultRooms()
         self.dungeon.SetupCityRooms()
 
-        self.testAgent.currentRoom = self.dungeon.startRoom
+        self.testAgent.currentRoom = "GreatPlaza"#self.dungeon.startRoom
         self.dungeon.agents["TestAgent"] = self.testAgent
+        self.SetupAgentThreads()
+
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -113,7 +115,7 @@ class Game:
         while self.gameIsRunning:
             self.lostClients = []
 
-            self.HandleAgents()
+            #self.HandleAgents()
 
             self.clientsLock.acquire()
 
@@ -146,7 +148,7 @@ class Game:
             self.clientsLock.release()
             time.sleep(0.5)
 
-    # Thread function
+    # Thread to accept clients connecting to the server.
     def AcceptThread(self, serverSocket):
         print(Fore.CYAN + "Accept thread running." + Fore.RESET)
 
@@ -191,6 +193,7 @@ class Game:
             # Added a space before #room to stop the # appending to the player name for some reason.
             server.Output(new_client[0], '#room ' + newPlayer.currentRoom)
 
+    # Thread to receive input from clients.
     def ReceiveThread(self, client):
 
         print(Fore.CYAN + "Receive thread running." + Fore.RESET)
@@ -210,9 +213,32 @@ class Game:
                 clientIsValid = False
 
     def HandleAgents(self):
-        # self.inputManager.HandleInput('', self.testAgent, "go north")
         # self.aiInputManager.HandleInput(self.testAgent, "go north")
+
+        self.aiInputManager.GetOptions(self.testAgent)
+        self.aiInputManager.MakeChoice(self.testAgent)
+        self.testAgent.ClearOptions()
+
         pass
+
+    def SetupAgentThreads(self):
+        # For each agent in the dungeon, start a new thread.
+        for agent in self.dungeon.agents:
+            newAgentThread = threading.Thread(target=self.HandleAgentThread, args=(self.dungeon.agents[agent],))
+            newAgentThread.start()
+
+    # Thread that handles processing for each ai.
+    def HandleAgentThread(self, agent):
+
+        handleAgent = True
+
+        while handleAgent is True:
+            self.aiInputManager.GetOptions(agent)
+
+            self.aiInputManager.MakeChoice(agent)
+            time.sleep(2.0)
+
+            self.testAgent.ClearOptions()
 
 
 
