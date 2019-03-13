@@ -59,14 +59,10 @@ class Game:
         # Agent builder class
         self.aiBuilder = ''
 
-        # Create ai agents.
-        #self.guardAgent = npcAgent.NpcAgent("City Guard", 1, "A guard of the city.", "SouthGate")
-        #self.merchantAgent = npcAgent.NpcAgent("Spice Merchant", 1, "A merchant in rich silks.", "Market")
-        #self.citizenAgent = npcAgent.NpcAgent("Citizen", 1, "An ordinary citizen.", "SouthRoad")
-
     def setup(self, dungeonName):
         self.gameIsRunning = True
 
+        # Setup network connection
         self.Connect()
 
         # Create a dungeon
@@ -79,10 +75,6 @@ class Game:
         # Setup rooms for the dungeon
         # self.dungeon.SetupDefaultRooms()
         self.dungeon.SetupCityRooms()
-
-        # Setup agent values.
-        #self.guardAgent.currentRoom = self.guardAgent.home
-        #self.dungeon.agents[self.guardAgent.name] = self.guardAgent
 
         # Create aiBuilder
         self.aiBuilder = npcAgent.AgentBuilder(self.dungeon)
