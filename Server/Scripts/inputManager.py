@@ -192,6 +192,8 @@ class InputManager:
 
     def Move(self, playerClient, player, splitInput):
 
+        output = ''
+
         # List comprehension to get matches between possible movement directions and input commands.
         moveDirection = [direction for direction in splitInput if direction in self.directions]
 
@@ -213,7 +215,19 @@ class InputManager:
                 # Update room label
                 server.Output(playerClient, '#room ' + player.currentRoom)
 
-                return "\n" + "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
+                output = "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
+
+                # Check for ai agents
+                for agent in self.dungeon.agents:
+                    if self.dungeon.agents[agent].currentRoom == player.currentRoom:
+                        output = output + ("<br>" + self.dungeon.agents[agent].name + " is in the room.")
+
+                # Check for other players
+                for playerClient in self.dungeon.players:
+                    if (self.dungeon.players[playerClient].currentRoom == player.currentRoom) and (self.dungeon.players[playerClient] != player):
+                        output = output + ("<br font color=Purple>" + self.dungeon.players[playerClient].name + " is standing nearby. </font>")
+
+                return "\n" + output
 
         return "Please enter a valid direction."
 
