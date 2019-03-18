@@ -1,8 +1,10 @@
 from Scripts import room
 from Scripts import server
 from Scripts import player
+from Scripts import database
 from colorama import Fore, Back, Style, init
 import threading
+
 
 # The Dungeon the player explores
 class Dungeon:
@@ -37,6 +39,8 @@ class Dungeon:
 
         # The room the player will start in
         self.startRoom = ''
+
+        self.sqlManager = database.sqlManager()
 
     # Setup the rooms of the dungeon. Default setup for testing.
     def SetupDefaultRooms(self):
