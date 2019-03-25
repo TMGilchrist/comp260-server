@@ -32,8 +32,18 @@ class sqlManager:
         cursor.execute(dungeonSQL)
         self.connection.commit()
 
-    def CreateRoom(self, data):
-        insertSQL = "INSERT INTO dungeonRooms() VALUES(?, ?, ?)"
+    def CreateRoom(self, name, entryDescription, description, connections):
+        insertSQL = "INSERT INTO dungeonRooms(name, entryDescription, description, connections) VALUES(?, ?, ?, ?)"
 
-        self.cursor.execute(insertSQL, data)
+        self.cursor.execute(insertSQL, (name, entryDescription, description, connections))
         self.connection.commit()
+
+    def QueryTableByID(self, tableName, fieldToFind, ID):
+
+        self.cursor.execute("SELECT " + fieldToFind + " FROM " + tableName + " WHERE ID = " + ID)
+
+        result = self.cursor.fetchone()[0]
+        print("Result of query is " + result)
+
+
+

@@ -9,6 +9,26 @@ from PyQt5 import QtCore, QtGui, uic, QtWidgets
 qtCreatorFile = "../Forms/ClientMain.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
+# Load in login screen file.
+modalDialogFile = "../Forms/loginScreen.ui"
+Ui_loginScreen, QtBaseClass = uic.loadUiType(modalDialogFile)
+
+
+# Login screen modal dialog.
+class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
+
+    def __init__(self):
+        QtWidgets.QDialog.__init__(self)
+        Ui_loginScreen.__init__(self)
+        self.setupUi(self)
+
+        """--------------------
+              Listeners
+        --------------------"""
+
+        # On login button press
+        self.loginButton.clicked.connect(self.close)
+
 
 # PyQT application.
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -19,6 +39,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.game = game
+        self.dialog = ''
 
         # Setup timer
         self.timer = QtCore.QTimer()
@@ -28,12 +49,22 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # Send startup message
         self.textDisplayMain.append("Window init.")
 
+        self.ShowLoginScreen()
+
         """--------------------
               Listeners
         --------------------"""
 
         # When enter is pressed in input box.
         self.userInput.returnPressed.connect(self.UserInputSubmit)
+
+    # Open the login screen as a modal dialog.
+    def ShowLoginScreen(self):
+        self.dialog = LoginScreen()
+
+        # For Modal dialogs
+        self.dialog.exec_()
+
 
     # Test function to print stuff
     def PrintStuff(self):
