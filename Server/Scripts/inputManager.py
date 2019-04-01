@@ -213,7 +213,7 @@ class InputManager:
                 self.MessagePlayers(player, player.name + " enters the room.", True)
 
                 # Update room label
-                server.Output(playerClient, '#room ' + player.currentRoom)
+                server.Server.OutputJson(playerClient, '#room ' + player.currentRoom)
 
                 output = "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
 
@@ -256,9 +256,9 @@ class InputManager:
                 # If the message should only be hear by players in the same room
                 if sameRoomOnly is True:
                     if self.dungeon.players[playerClient].currentRoom == player.currentRoom:
-                        server.Output(playerClient, message)
+                        server.Server.OutputJson(playerClient, message)
                 else:
-                    server.Output(playerClient, message)
+                    server.Server.OutputJson(playerClient, message)
 
     # Parse specific commands to call server functions.
     def ParseServerCommand(self, playerClient, player, command, splitInput):
@@ -284,7 +284,7 @@ class InputManager:
             self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
             player.name = value.capitalize()
             print("player name value = " + value)
-            server.Output(playerClient, "#name " + player.name)
+            server.Server.OutputJson(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
 
         else:

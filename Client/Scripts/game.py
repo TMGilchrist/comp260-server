@@ -3,6 +3,7 @@ import socket
 import time
 import threading
 import sys
+import json
 
 from queue import *
 from colorama import Fore, init
@@ -34,12 +35,36 @@ class Game:
 
     # Thread that handles receiving messages from the server and adding them to the message queue.
     def receiveThread(self, serverSocket):
-        print(Fore.CYAN + "Receive thread running." + Fore.RESET)
+        print(Fore.CYAN + "Receive thread running. \n" + Fore.RESET)
 
+        # Receive packets
         while self.isConnected is True:
             try:
-                message = serverSocket.recv(4096).decode("utf-8")
-                self.messageQueue.put(message)
+                # Get 4-character packet ID
+                packetID = serverSocket.recv(4)
+
+                print(Fore.YELLOW + "Packet Received." + Fore.RESET)
+                print(Fore.YELLOW + "PacketID = " + Fore.RESET + packetID.decode("utf-8"))
+
+                # Check if packet ID is correct.
+                if packetID.decode("utf-8") == "MudM":
+                    # Store size of payload
+                    payloadSize = int.from_bytes(serverSocket.recv(2), 'little')
+
+                    print(Fore.YELLOW + "Payload size: " + Fore.RESET + str(payloadSize))
+
+                    # Grab payload data.
+                    payloadData = serverSocket.recv(payloadSize)
+
+                    # Convert data to dictionary.
+                    data = json.loads(payloadData)
+
+                    print(Fore.YELLOW + "Time Sent: " + Fore.RESET + data["time"])
+                    print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
+                    print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
+
+                    # Add the message to to the messageQueue
+                    self.messageQueue.put(data["message"])
 
             except socket.error:
                 self.isConnected = False

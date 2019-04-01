@@ -28,6 +28,7 @@ class Game:
         # Legacy
         self.gameIsRunning = ''
 
+        self.server = ''
         self.dungeon = ''
 
         self.inputManager = ''
@@ -84,7 +85,7 @@ class Game:
         self.aiBuilder.SetUpAgents()
 
         # Create processing threads for each agent in the game.
-        self.CreateAgentThreads()
+        #self.CreateAgentThreads()
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -122,8 +123,6 @@ class Game:
         while self.gameIsRunning:
             self.lostClients = []
 
-            #self.HandleAgents()
-
             self.clientsLock.acquire()
 
             while self.commandQueue.qsize() > 0:
@@ -146,7 +145,7 @@ class Game:
                     # Send server output. server.Output returns false if not connected.
                     print(Fore.GREEN + "Sending output to client" + Fore.RESET)
                     print(Fore.GREEN + serverOutput + Fore.RESET)
-                    server.Output(currentCommand[0], serverOutput)
+                    server.Server.OutputJson(currentCommand[0], serverOutput)
 
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
@@ -185,7 +184,7 @@ class Game:
             newPlayer = self.dungeon.players[new_client[0]]
 
             # Send player name to the client
-            server.Output(new_client[0], "#name " + newPlayer.name + "\n")
+            server.Server.OutputJson(new_client[0], "#name " + newPlayer.name + "\n")
 
             # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
             time.sleep(0.5)
@@ -193,12 +192,12 @@ class Game:
             # For all other players in the game display who has joined the game..
             for playerClient in self.dungeon.players:
                 if self.dungeon.players[playerClient] != newPlayer:
-                    server.Output(playerClient, "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
+                    server.Server.OutputJson(playerClient, "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
 
             # Send roomName to the client. Not very nice being here.
             # Would be nice to do this at the beginning of the gameloop.
             # Added a space before #room to stop the # appending to the player name for some reason.
-            server.Output(new_client[0], '#room ' + newPlayer.currentRoom)
+            server.Server.OutputJson(new_client[0], '#room ' + newPlayer.currentRoom)
 
     # Thread to receive input from clients.
     def ReceiveThread(self, client):

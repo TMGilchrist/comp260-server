@@ -35,8 +35,9 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
     def Login(self):
         # Get user input
-        username = self.usernameInput.text()
-        password = self.passwordInput.text()
+        # These two lines cause python to crash? Happened after implemented json.
+        # username = self.usernameInput.text()
+        # password = self.passwordInput.text()
 
         # self.game.networkSocket.send(newInput.encode())
 
@@ -48,6 +49,7 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         password = self.passwordInput.text()
 
         pass
+
 
 # PyQT application.
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -118,7 +120,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Parse server commands. This could call functions for specific command types - set data etc
     def ParseCommand(self, commandString):
-        print("Parsing command args")
+        print("Parsing command string.")
         print("Command string = " + commandString)
 
         # Split string by spaces
@@ -130,7 +132,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Set the rest of the string to the value being set
         value = ' '.join(splitString)
-        print("Value = " + value)
+        print("Value = " + value + "\n")
 
         # Change labels to match new values
         if command == '#name':
