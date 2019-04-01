@@ -1,8 +1,5 @@
-from Scripts import room
-from Scripts import server
-from Scripts import player
-from Scripts import database
-from colorama import Fore, Back, Style, init
+from Scripts import player, room, database
+from colorama import init
 import threading
 
 

@@ -20,6 +20,10 @@ class Game:
         self.isConnected = False
         self.clientIsRunning = True
 
+        self.userLocalHost = False
+        self.serverIP = "46.101.56.200"
+        self.serverPort = 9100
+
         self.networkSocket = ''
         self.currentReceiveThread = ''
         self.currentBackgroundThread = ''
@@ -89,6 +93,13 @@ class Game:
                 try:
                     if len(sys.argv) > 1:
                         self.networkSocket.connect((sys.argv[1], 8222))
+
+                    elif self.userLocalHost is True:
+                        self.networkSocket.connect(("127.0.0.1", 8222))
+
+                    elif self.serverIP != '' and self.serverPort != '':
+                        print("Using serverIP!")
+                        self.networkSocket.connect((self.serverIP, self.serverPort))
 
                     else:
                         self.networkSocket.connect(("127.0.0.1", 8222))

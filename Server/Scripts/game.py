@@ -1,13 +1,10 @@
 # Main game class. Contains gameloop
 
-from Scripts import player
-from Scripts import dungeon
-from Scripts import server
-from Scripts import inputManager
-from Scripts import aiInputManager
-from Scripts import npcAgent
+from Scripts import aiInputManager, npcAgent, inputManager, server, dungeon
 
 from colorama import Fore, init
+
+
 
 import socket
 import time
@@ -36,6 +33,10 @@ class Game:
 
         # Init colourama
         init()
+
+        self.userLocalHost = False
+        self.serverIP = "46.101.56.200"
+        self.serverPort = 9100
 
         self.networkSocket = ''
         self.myAcceptThread = ''
@@ -95,6 +96,13 @@ class Game:
             # Use address specified in command line args
             if len(sys.argv) > 1:
                 self.networkSocket.bind((sys.argv[1], 8222))
+
+            elif self.userLocalHost is True:
+                self.networkSocket.bind(("127.0.0.1", 8222))
+
+            elif self.serverIP != '' and self.serverPort != '':
+                print("Using serverIP")
+                self.networkSocket.bind((self.serverIP, self.serverPort))
 
             # Use default localhost
             else:

@@ -1,9 +1,9 @@
 from Scripts import game
-from Scripts import database
 
 
 # Entry point of program
 def main():
+
     print("Entry point of SUD game.\n\n")
 
     """sqlManger = database.sqlManager()

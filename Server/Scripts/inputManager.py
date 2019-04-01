@@ -1,6 +1,7 @@
-from colorama import Fore, Back, Style, init
-import socket
+from colorama import Fore, init
 from Scripts import server
+
+
 # from PyQt5 import QtGui
 
 class InputManager:

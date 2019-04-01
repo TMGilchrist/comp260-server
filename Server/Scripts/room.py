@@ -1,5 +1,4 @@
-from Scripts import item
-from Scripts import npc
+from Scripts import item, npc
 
 
 # A room in the Dungeon

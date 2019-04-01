@@ -1,6 +1,5 @@
-from Scripts import inputManager
 from Scripts import character
-from colorama import Fore, Back, Style, init
+from colorama import init
 
 
 class Player(character.Character):

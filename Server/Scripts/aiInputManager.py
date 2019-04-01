@@ -1,7 +1,6 @@
-from colorama import Fore, Back, Style, init
-from Scripts import server
+from colorama import Fore, init
 import random
-from Scripts import npcAgent
+from Scripts import npcAgent, server
 import numpy
 
 
