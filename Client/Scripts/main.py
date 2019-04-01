@@ -17,18 +17,37 @@ Ui_loginScreen, QtBaseClass = uic.loadUiType(modalDialogFile)
 # Login screen modal dialog.
 class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
-    def __init__(self):
+    def __init__(self, game):
         QtWidgets.QDialog.__init__(self)
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
+
+        self.game = game
 
         """--------------------
               Listeners
         --------------------"""
 
         # On login button press
-        self.loginButton.clicked.connect(self.close)
+        self.loginButton.clicked.connect(self.Login)
 
+        self.newAccountButton.clicked.connect(self.NewAccount)
+
+    def Login(self):
+        # Get user input
+        username = self.usernameInput.text()
+        password = self.passwordInput.text()
+
+        # self.game.networkSocket.send(newInput.encode())
+
+        self.close()
+
+    def NewAccount(self):
+        # Get user input
+        username = self.usernameInput.text()
+        password = self.passwordInput.text()
+
+        pass
 
 # PyQT application.
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -60,7 +79,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # Open the login screen as a modal dialog.
     def ShowLoginScreen(self):
-        self.dialog = LoginScreen()
+        self.dialog = LoginScreen(self.game)
 
         # For Modal dialogs
         self.dialog.exec_()
