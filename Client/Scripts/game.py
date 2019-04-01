@@ -79,8 +79,8 @@ class Game:
         # When not connected, attempt to connect.
         while (self.isConnected is False) and (self.clientIsRunning is True):
             try:
-                print(Fore.CYAN + "Background Thread: attempting to connect." + Fore.RESET)
-                self.messageQueue.put("<font color=Cyan>Attempting to connect to server.</font>")
+                print(Fore.CYAN + "Background Thread: attempting to connect..." + Fore.RESET)
+                self.messageQueue.put("<font color=Cyan>Attempting to connect to server...</font>")
 
                 # Find server socket
                 self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -95,11 +95,13 @@ class Game:
 
                     self.isConnected = True
                     print(Fore.CYAN + "Background Thread: Connected to server." + Fore.RESET)
-                    self.messageQueue.put("<font color=Cyan>Connected to server.</font>")
+                    self.messageQueue.put("<font color=Cyan>Connected to server!</font>")
 
                 except socket.error:
-                    print(Fore.RED + "Background Thread: Failed to connect to the server." + Fore.RESET)
-                    self.messageQueue.put("<font color=Red>Failed to connect to the server.</font>")
+                    time.sleep(2.0)
+                    print(Fore.RED + "Background Thread: Failed to connect to the server..." + Fore.RESET)
+                    self.messageQueue.put("<font color=Red>Failed to connect to the server...</font>")
+                    time.sleep(1.0)
 
                 # Start the receive thread
                 self.currentReceiveThread = threading.Thread(target=self.receiveThread, args=(self.networkSocket,))

@@ -28,10 +28,10 @@ class Dungeon:
         init()
 
         # A description of the dungeon that is shown at the start of the game.
-        self.description = "----------------------------------------------------------\n" \
-                           + Fore.RED + "You descend the worn steps into the cool dark of the Dungeon. \n" \
-                           "What awaits you within?\n" + Fore.RESET + \
-                           "----------------------------------------------------------\n"
+        self.description = "<br><font color=Gold>----------------------------------------------------------<br></font>" \
+                           "<font color=Gold>You have ventured to the ancient city of DesertCityMcDesertName.<br>" \
+                           "What adventures await you within?</font>" \
+                           "<br><font color=Gold>----------------------------------------------------------<br></font>"
 
         # Set up pre-defined rooms
         self.defaultRooms = room.DefaultRooms()

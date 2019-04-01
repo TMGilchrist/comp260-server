@@ -122,6 +122,6 @@ class AiInputManager:
                 # If the message should only be hear by players in the same room
                 if sameRoomOnly is True:
                     if self.dungeon.players[playerClient].currentRoom == agent.currentRoom:
-                        server.Output(playerClient, message)
+                        server.Server.OutputJson(playerClient, message)
                 else:
-                    server.Output(playerClient, message)
+                    server.Server.OutputJson(playerClient, message)

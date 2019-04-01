@@ -67,9 +67,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(100)
 
-        # Send startup message
-        self.textDisplayMain.append("Window init.")
-
         self.ShowLoginScreen()
 
         """--------------------
@@ -140,6 +137,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         elif command == '#room':
             self.SetLabel(self.currentRoomLabel, value)
+
+        elif command == '#exit':
+            self.close()
 
     # Updates a labels text
     def SetLabel(self, labelToSet, newValue):

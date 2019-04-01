@@ -74,6 +74,7 @@ class InputManager:
             return self.InventoryMenu(player, command, splitInput)
 
         if command == "exit":
+            server.Server.OutputJson(playerClient, "#exit")
             return "exit"
 
         # Check for GO command.
