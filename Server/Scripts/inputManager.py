@@ -59,7 +59,7 @@ class InputManager:
         init()
 
     def HandleInput(self, playerClient, player, userInput):
-        print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
+        # print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
         # Split string into individual words
         splitInput = userInput.split(' ')

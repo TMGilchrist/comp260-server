@@ -130,59 +130,7 @@ class Game:
 
         self.lostClients = []
 
-        # Main server loop
-        while self.gameIsRunning:
-
-            self.clientsLock.acquire()
-
-            while self.commandQueue.qsize() > 0:
-                currentCommand = self.commandQueue.get()
-
-                self.activeClient = currentCommand[0]
-                self.activePlayer = self.dungeon.players[self.activeClient]
-
-                # Process user command into output.
-                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1].decode("utf-8"))
-
-                if serverOutput is None:
-                    serverOutput = "An error has occurred that left serverOutput as NoneType."
-
-                if serverOutput == "exit":
-                    # self.gameIsRunning = False
-                    print("This should disconnect the client but not affect the server.")
-
-                else:
-                    # Send server output. server.Output returns false if not connected.
-                    print(Fore.GREEN + "Sending output to client" + Fore.RESET)
-                    print(Fore.GREEN + serverOutput + Fore.RESET)
-                    server.Server.OutputJson(currentCommand[0], serverOutput)
-
-            # Remove lost clients from clients dictionary
-            for client in self.lostClients:
-                self.clients.pop(client)
-                self.dungeon.RemovePlayer(client)
-
-            self.lostClients = []
-
-            self.clientsLock.release()
-            time.sleep(0.5)
-
-        """
-        # Create and start the main game thread (replacing the old gameloop)
-        self.mainGameThread = threading.Thread(target=self.MainGameThread)
-        self.mainGameThread.start()
-
-        while self.gameIsRunning:
-            serverInput = input(">>")
-            print(serverInput)
-
-        # get server side input
-        # push onto server queue"""
-
-    def MainGameThread(self):
-        print("Server in main game thread")
-
-        self.lostClients = []
+        verboseOutput = False
 
         # Main server loop
         while self.gameIsRunning:
@@ -201,14 +149,12 @@ class Game:
                 if serverOutput is None:
                     serverOutput = "An error has occurred that left serverOutput as NoneType."
 
-                if serverOutput == "exit":
-                    # self.gameIsRunning = False
-                    print("This should disconnect the client but not affect the server.")
-
                 else:
-                    # Send server output. server.Output returns false if not connected.
-                    print(Fore.GREEN + "Sending output to client" + Fore.RESET)
-                    print(Fore.GREEN + serverOutput + Fore.RESET)
+                    if verboseOutput is True:
+                        print(Fore.GREEN + "Sending output to client" + Fore.RESET)
+                        print(Fore.GREEN + serverOutput + Fore.RESET)
+
+                    # Send server output to client
                     server.Server.OutputJson(currentCommand[0], serverOutput)
 
             # Remove lost clients from clients dictionary
@@ -230,7 +176,9 @@ class Game:
         while True:
             # Get new client
             newClient = serverSocket.accept()
-            print("Added client!")
+            print(Fore.GREEN + "\nClient joined.")
+            print("IP:" + str(newClient[0].getsockname()))
+            print("Name:" + str(newClient[0].getpeername()) + "\n" + Fore.RESET)
 
             # Update number of connected clients
             clientCount += 1
@@ -317,8 +265,7 @@ class Game:
     # Thread that accepts input from the server-side admin
     def ServerThread(self):
         while self.gameIsRunning:
-            serverInput = input(">>")
-            print(serverInput)
+            serverInput = input()
 
             self.ProcessServerInput(serverInput)
 
@@ -330,12 +277,26 @@ class Game:
             self.gameIsRunning = False;
             sys.exit(0)
 
+        # Print all players names. Maybe with rooms etc?
         elif input == "players":
-            #showPlayers
-            pass
+            print(Fore.CYAN + "\nPlayers:" + Fore.RESET)
+
+            for player in self.dungeon.players:
+                print(self.dungeon.players[player].name)
+
+        elif input == "playersLog":
+            print(Fore.CYAN + "\nPlayers (Details):" + Fore.RESET)
+
+            for player in self.dungeon.players:
+
+                currentPlayer = self.dungeon.players[player]
+
+                print(Fore.CYAN + "\n" + currentPlayer.name + Fore.RESET)
+                print("Health: " + str(currentPlayer.health))
+                print("Current Room: " + currentPlayer.currentRoom + Fore.RESET)
 
         elif input == "agents":
-            #show npc agents
+            # show npc agents
             pass
 
         else:
