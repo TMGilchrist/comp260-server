@@ -41,6 +41,7 @@ class Game:
         self.networkSocket = ''
         self.myAcceptThread = ''
         self.serverThread = ''
+        self.mainGameThread = ''
         self.client = client
 
         # Dictionary of clients
@@ -90,8 +91,8 @@ class Game:
         self.CreateAgentThreads()
 
         # Start the server input thread.
-        #self.serverThread = threading.Thread(target=self.ServerThread())
-        #self.serverThread.start()
+        self.serverThread = threading.Thread(target=self.ServerThread)
+        self.serverThread.start()
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -125,13 +126,66 @@ class Game:
 
     # Main game code
     def GameLoop(self):
-        print("Server in gameloop")
+        print("Gameloop")
 
         self.lostClients = []
 
         # Main server loop
         while self.gameIsRunning:
 
+            self.clientsLock.acquire()
+
+            while self.commandQueue.qsize() > 0:
+                currentCommand = self.commandQueue.get()
+
+                self.activeClient = currentCommand[0]
+                self.activePlayer = self.dungeon.players[self.activeClient]
+
+                # Process user command into output.
+                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1].decode("utf-8"))
+
+                if serverOutput is None:
+                    serverOutput = "An error has occurred that left serverOutput as NoneType."
+
+                if serverOutput == "exit":
+                    # self.gameIsRunning = False
+                    print("This should disconnect the client but not affect the server.")
+
+                else:
+                    # Send server output. server.Output returns false if not connected.
+                    print(Fore.GREEN + "Sending output to client" + Fore.RESET)
+                    print(Fore.GREEN + serverOutput + Fore.RESET)
+                    server.Server.OutputJson(currentCommand[0], serverOutput)
+
+            # Remove lost clients from clients dictionary
+            for client in self.lostClients:
+                self.clients.pop(client)
+                self.dungeon.RemovePlayer(client)
+
+            self.lostClients = []
+
+            self.clientsLock.release()
+            time.sleep(0.5)
+
+        """
+        # Create and start the main game thread (replacing the old gameloop)
+        self.mainGameThread = threading.Thread(target=self.MainGameThread)
+        self.mainGameThread.start()
+
+        while self.gameIsRunning:
+            serverInput = input(">>")
+            print(serverInput)
+
+        # get server side input
+        # push onto server queue"""
+
+    def MainGameThread(self):
+        print("Server in main game thread")
+
+        self.lostClients = []
+
+        # Main server loop
+        while self.gameIsRunning:
 
             self.clientsLock.acquire()
 
@@ -263,16 +317,10 @@ class Game:
     # Thread that accepts input from the server-side admin
     def ServerThread(self):
         while self.gameIsRunning:
-            #serverInput = input(">>")
-            #print(">>")
-            #serverInput = sys.stdin.readline()
-            #print(serverInput)
-
-            serverInput = "foo"
-            time.sleep(2)
+            serverInput = input(">>")
             print(serverInput)
 
-            #self.ProcessServerInput(serverInput)
+            self.ProcessServerInput(serverInput)
 
     # Process server-side input from the admin.
     def ProcessServerInput(self, input):
@@ -292,7 +340,6 @@ class Game:
 
         else:
             print("Invalid command.")
-
 
 
 
