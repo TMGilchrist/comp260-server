@@ -40,6 +40,7 @@ class Game:
 
         self.networkSocket = ''
         self.myAcceptThread = ''
+        self.serverThread = ''
         self.client = client
 
         # Dictionary of clients
@@ -87,6 +88,10 @@ class Game:
 
         # Create processing threads for each agent in the game.
         self.CreateAgentThreads()
+
+        # Start the server input thread.
+        #self.serverThread = threading.Thread(target=self.ServerThread())
+        #self.serverThread.start()
 
     def Connect(self):
         self.networkSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -255,8 +260,38 @@ class Game:
             newAgentThread = threading.Thread(target=self.HandleAgentThread, args=(self.dungeon.agents[agent],))
             newAgentThread.start()
 
+    # Thread that accepts input from the server-side admin
+    def ServerThread(self):
+        while self.gameIsRunning:
+            #serverInput = input(">>")
+            #print(">>")
+            #serverInput = sys.stdin.readline()
+            #print(serverInput)
 
+            serverInput = "foo"
+            time.sleep(2)
+            print(serverInput)
 
+            #self.ProcessServerInput(serverInput)
+
+    # Process server-side input from the admin.
+    def ProcessServerInput(self, input):
+        # Close the server.
+        if input == "exit":
+            print("Closing server.")
+            self.gameIsRunning = False;
+            sys.exit(0)
+
+        elif input == "players":
+            #showPlayers
+            pass
+
+        elif input == "agents":
+            #show npc agents
+            pass
+
+        else:
+            print("Invalid command.")
 
 
 
