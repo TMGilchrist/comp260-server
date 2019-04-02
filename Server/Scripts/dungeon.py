@@ -75,7 +75,14 @@ class Dungeon:
             #server.Output(player.client, "\nThere is nowhere to go in this direction.")
             return currentRoom
 
+    # Is dungeon.players even necessary anymore?
     def AddPlayer(self, client, playerName):
         self.playersLock.acquire()
         self.players[client] = player.Player(playerName, 10, self)
+        self.playersLock.release()
+
+    def RemovePlayer(self, client):
+        print("REMOVING PLAYER FROM DUNGEON \n")
+        self.playersLock.acquire()
+        del self.players[client]
         self.playersLock.release()

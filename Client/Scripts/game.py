@@ -20,7 +20,7 @@ class Game:
         self.isConnected = False
         self.clientIsRunning = True
 
-        self.userLocalHost = False
+        self.userLocalHost = True
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 

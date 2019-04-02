@@ -34,7 +34,7 @@ class Game:
         # Init colourama
         init()
 
-        self.userLocalHost = False
+        self.userLocalHost = True
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
@@ -122,9 +122,11 @@ class Game:
     def GameLoop(self):
         print("Server in gameloop")
 
+        self.lostClients = []
+
         # Main server loop
         while self.gameIsRunning:
-            self.lostClients = []
+
 
             self.clientsLock.acquire()
 
@@ -153,6 +155,9 @@ class Game:
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
                 self.clients.pop(client)
+                self.dungeon.RemovePlayer(client)
+
+            self.lostClients = []
 
             self.clientsLock.release()
             time.sleep(0.5)
@@ -224,6 +229,7 @@ class Game:
             except socket.error:
                 print(Fore.RED + "Lost Client" + Fore.RESET)
                 self.lostClients.append(client)
+
                 clientIsValid = False
 
     # Thread that handles processing for each ai.

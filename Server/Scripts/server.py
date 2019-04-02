@@ -1,12 +1,14 @@
 import socket
 import json
 import time
-
+from colorama import Fore, init
 
 class Server:
 
     seqID = 0
     packetID = "MudM"
+
+    init()
 
     @staticmethod
     def Output(client, output):
@@ -33,13 +35,14 @@ class Server:
             client.send(header)
             client.send(jsonPacket.encode())
 
-            print("Sent: " + str(dataDict["value"]))
+            # print("Sent: " + str(dataDict["value"]))
             cls.seqID += 1
 
             return True
 
         except socket.error:
-            print("Client lost")
+            print(Fore.RED + "Unable to send to client." + Fore.RESET)
+            print("Attempted output: " + output)
             return False
 
 

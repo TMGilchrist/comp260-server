@@ -3,6 +3,7 @@ import random
 from Scripts import npcAgent, server
 import numpy
 
+import sys, os
 
 class AiInputManager:
 
@@ -22,6 +23,8 @@ class AiInputManager:
 
         # Initialise colorama
         init()
+
+        self.verboseLog = False
 
     def Move(self, agent, direction):
 
@@ -46,27 +49,27 @@ class AiInputManager:
         # Clear any current options.
         agent.moveDirections.clear()
 
-        print("Possible directions from this room.")
+        self.LogOutput("Possible directions from this room.")
 
         for connection in self.dungeon.rooms[agent.currentRoom].connections:
             if self.dungeon.rooms[agent.currentRoom].connections[connection] != "":
                 agent.moveDirections.append(connection)
 
-        print(agent.moveDirections)
+        self.LogOutput(agent.moveDirections)
 
     # Choose which command to use.
     def MakeChoice(self, agent):
-        print("AI making choice.")
+        self.LogOutput("AI making choice.")
 
         # Get a random choice from the agent's option list, based on the list of probabilities.
         optionChoice = numpy.random.choice(agent.options, p=agent.optionWeights)
 
-        print("Choice: " + optionChoice)
+        self.LogOutput("Choice: " + optionChoice)
 
         # Wait in room.
         if optionChoice == "wait":
-            print("Waiting in room")
-            print(Fore.CYAN + "AI current room: " + agent.currentRoom + "\n" + Fore.RESET)
+            self.LogOutput("Waiting in room")
+            self.LogOutput(Fore.CYAN + "AI current room: " + agent.currentRoom + "\n" + Fore.RESET)
 
             timeToWait = 4
             return timeToWait
@@ -91,10 +94,10 @@ class AiInputManager:
             # Direction to move in
             moveDirection = agent.moveDirections[random.randint(0, len(agent.moveDirections) - 1)]
 
-            print("Moving " + moveDirection)
+            self.LogOutput("Moving " + moveDirection)
             self.Move(agent, moveDirection)
 
-            print(Fore.CYAN + "AI current room: " + agent.currentRoom + "\n" + Fore.RESET)
+            self.LogOutput(Fore.CYAN + "AI current room: " + agent.currentRoom + "\n" + Fore.RESET)
 
             self.Say(agent, self.conversation.greetings[random.randint(0, len(self.conversation.greetings) - 1)])
 
@@ -124,3 +127,7 @@ class AiInputManager:
                         server.Server.OutputJson(playerClient, message)
                 else:
                     server.Server.OutputJson(playerClient, message)
+
+    def LogOutput(self, output):
+        if self.verboseLog is True:
+            print(output)
