@@ -1,0 +1,3 @@
+users: ID (int primary key), Name (text), Username (text), Password (text)
+players: ID (int primary Key), User (users ID), name (text), currentRoom (dungeonRooms ID)
+dungeonRooms

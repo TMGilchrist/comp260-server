@@ -1,10 +1,8 @@
 # Main game class. Contains gameloop
 
-from Scripts import aiInputManager, npcAgent, inputManager, server, dungeon
+from Scripts import aiInputManager, npcAgent, inputManager, server, dungeon, database
 
 from colorama import Fore, init
-
-
 
 import socket
 import time
@@ -30,6 +28,8 @@ class Game:
 
         self.inputManager = ''
         self.aiInputManager = ''
+
+        self.sqlManager = database.sqlManager()
 
         # Init colourama
         init()
@@ -68,6 +68,12 @@ class Game:
 
         # Setup network connection
         self.Connect()
+
+        # Connecting to database. Probably don't need to do create tables as it should already be made.
+        self.sqlManager.ConnectToDB("../MUDdatabase.db")
+        # self.sqlManager.CreateTables()
+        # self.sqlManager.CreateRoom("SouthGateApproach", "Desert is all around.", "You walk into the harsh sands of the desert.", "SouthGate")
+        self.sqlManager.QueryTableByID("dungeonRooms", "RoomName", "1")
 
         # Create a dungeon
         self.dungeon = dungeon.Dungeon(dungeonName)

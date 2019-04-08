@@ -18,7 +18,7 @@ class sqlManager:
     def CreateTables(self):
         dungeonSQL = """
                      CREATE TABLE dungeonRooms(
-                     id int PRIMARY KEY,
+                     id integer PRIMARY KEY,
                      RoomName text NOT NULL,
                      EntryDescription text DEFAULT "You enter an empty room.",
                      Description text DEFAULT "An empty room.",
@@ -32,10 +32,10 @@ class sqlManager:
         cursor.execute(dungeonSQL)
         self.connection.commit()
 
-    def CreateRoom(self, name, entryDescription, description, connections):
-        insertSQL = "INSERT INTO dungeonRooms(name, entryDescription, description, connections) VALUES(?, ?, ?, ?)"
+    def CreateRoom(self, name, entryDescription, description, north='', east='', south='', west=''):
+        insertSQL = "INSERT INTO dungeonRooms(RoomName, EntryDescription, Description, North, East, South, West) VALUES(?, ?, ?, ?, ?, ?, ?)"
 
-        self.cursor.execute(insertSQL, (name, entryDescription, description, connections))
+        self.cursor.execute(insertSQL, (name, entryDescription, description, north, east, south, west))
         self.connection.commit()
 
     def QueryTableByID(self, tableName, fieldToFind, ID):
