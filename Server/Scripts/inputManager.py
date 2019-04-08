@@ -1,5 +1,5 @@
 from colorama import Fore, init
-from Scripts import server
+from Scripts import server, database
 
 
 # from PyQt5 import QtGui
@@ -10,6 +10,9 @@ class InputManager:
 
         # The current dungeon
         self.dungeon = dungeon
+
+        self.sqlManager = database.sqlManager()
+        self.sqlManager.ConnectToDB("../MUDdatabase.db")
 
         # Help text, should include commands and useful info.
         self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \
@@ -250,7 +253,7 @@ class InputManager:
     # Parse specific commands to call server functions.
     def ParseServerCommand(self, playerClient, player, command, splitInput):
 
-        verboseLog = True
+        verboseLog = False
 
         if verboseLog:
             print(Fore.YELLOW + "\nClient command received: " + Fore.RESET)
@@ -303,6 +306,16 @@ class InputManager:
 
             print(Fore.YELLOW + "New username: " + Fore.RESET + username)
             print(Fore.YELLOW + "New password: " + Fore.RESET + password)
+
+            matches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
+            #print("Username matches: " + matches)
+
+            # Check if matches list is empty. This means the username is available.
+            if not matches:
+                print("Success!")
+
+            else:
+                print("Username already exists!")
 
         else:
             return "No such command found."

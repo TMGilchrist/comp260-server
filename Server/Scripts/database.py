@@ -15,6 +15,10 @@ class sqlManager:
 
         return connection
 
+    """------------------
+          Creation
+    ------------------"""
+
     def CreateTables(self):
         dungeonSQL = """
                      CREATE TABLE dungeonRooms(
@@ -32,19 +36,52 @@ class sqlManager:
         cursor.execute(dungeonSQL)
         self.connection.commit()
 
+    """------------------
+          Inserts
+    ------------------"""
+
     def CreateRoom(self, name, entryDescription, description, north='', east='', south='', west=''):
-        insertSQL = "INSERT INTO dungeonRooms(RoomName, EntryDescription, Description, North, East, South, West) VALUES(?, ?, ?, ?, ?, ?, ?)"
+        insertSQL = "INSERT INTO rooms(RoomName, EntryDescription, Description, North, East, South, West) VALUES(?, ?, ?, ?, ?, ?, ?)"
 
         self.cursor.execute(insertSQL, (name, entryDescription, description, north, east, south, west))
         self.connection.commit()
 
-    def QueryTableByID(self, tableName, fieldToFind, ID):
+    def CreateUser(self, username, password):
+        insertSQL = "INSERT INTO users(Username, Password) VALUES(?, ?)"
 
-        self.cursor.execute("SELECT ? FROM ? WHERE id = ?", (fieldToFind, tableName, ID,)) # Not working, probably because ? binding can't be used for table names.
-        result = self.cursor.fetchone() #[0] ?
-        print("Result of query is " + result)
+        self.cursor.execute(insertSQL, (username, password))
+        self.connection.commit()
 
-        return result
+    def CreatePlayer(self, name, currentRoom, user):
+        insertSQL = "INSERT INTO users(Name, CurrentRoom, User) VALUES(?, ?, ?)"
+
+        self.cursor.execute(insertSQL, (name, currentRoom, user))
+        self.connection.commit()
+
+    """------------------
+          Queries
+    ------------------"""
+
+    def QueryWithFilter(self, tableToQuery, fieldToQuery, filterField, filterValue):
+
+        self.cursor.execute("SELECT " + fieldToQuery + " FROM " + tableToQuery + " WHERE " + filterField + "=?", (filterValue,))
+
+        rows = self.cursor.fetchall()
+
+        for row in rows:
+            print(row)
+
+        return rows
+
+    def Query(self, tableToQuery, fieldToQuery):
+
+        self.cursor.execute("SELECT " + fieldToQuery + " FROM " + tableToQuery)
+
+        rows = self.cursor.fetchall()
+
+        for row in rows:
+            print(row)
+
 
 
 
