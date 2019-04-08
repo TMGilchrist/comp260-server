@@ -78,7 +78,7 @@ class Game:
         #                          "\nThrough the gates to the South, you can see the windswept desert. \nTo the north, a road leads into the city.",
         #                          north="SouthRoad", south="SouthGateApproach")
 
-        self.sqlManager.QueryTableByID("dungeonRooms", "Description", "2")
+        #self.sqlManager.QueryTableByID("dungeonRooms", "Description", "2")
 
         # Create a dungeon
         self.dungeon = dungeon.Dungeon(dungeonName)

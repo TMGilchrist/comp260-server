@@ -12,21 +12,6 @@ class InputManager:
         self.dungeon = dungeon
 
         # Help text, should include commands and useful info.
-        self.helpText = "\n------------------------------------------------------------------\n" \
-                        + Fore.BLUE + "General Commands \n" \
-                        "~~~~~~~~~~~~~~~~ \n" \
-                        + Fore.GREEN + "Help: " + Fore.RESET + "Displays this help message. \n" \
-                        + Fore.GREEN + "Go <direction>: " + Fore.RESET + "Move to the room in this direction. \n" \
-                        + Fore.GREEN + "<direction>: " + Fore.RESET + "Directions are North, East, South and West. \n" \
-                        + Fore.GREEN + "Look: " + Fore.RESET + "Look at the room around you. \n" \
-                        + Fore.GREEN + "Take <object>: " + Fore.RESET + "Attempt to take an object or item and add it to your inventory. \n" \
-                        + Fore.BLUE + "\nInventory Menu \n" \
-                        "~~~~~~~~~~~~~~~~ \n" \
-                        + Fore.GREEN + "Inventory: " + Fore.RESET + "Displays your inventory \n" \
-                        + Fore.GREEN + "Examine <object>: " + Fore.RESET + "Attempt to examine an object in your inventory in more detail. \n" \
-                        "------------------------------------------------------------------\n"
-
-        # Help text, should include commands and useful info.
         self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \
                             "<font color=Brown>General Commands</font><br>" \
                             "~~~~~~~~~~~~~~~~ <br>" \
@@ -121,7 +106,7 @@ class InputManager:
                     return "Unable to find item."
 
             elif command == "help":
-                return self.helpText
+                return self.helpTextHTML
 
             else:
                 return "No such command. You are currently in the Inventory Menu - Use 'help' to display a list of commands."
@@ -265,17 +250,23 @@ class InputManager:
     # Parse specific commands to call server functions.
     def ParseServerCommand(self, playerClient, player, command, splitInput):
 
-        # Remove the command from the input
+        verboseLog = True
+
+        if verboseLog:
+            print(Fore.YELLOW + "\nClient command received: " + Fore.RESET)
+            print(Fore.YELLOW + "Input: " + Fore.RESET + ' '.join(splitInput))
+            print(Fore.YELLOW + "Command: " + Fore.RESET + splitInput[0])
+
+        # Get the value (the input without the #command)
         del splitInput[0]
         value = ' '.join(splitInput)
-        print("Value = " + value)
+
+        if verboseLog:
+            print(Fore.YELLOW + "Value: "  + Fore.RESET + value + "\n")
 
         # Ignore any further hash commands.
         removeHash = value.split('#')
-        print("removeHash = " + value)
-
         value = removeHash[0]
-        print("Value = " + value)
 
         # Check for  null value.
         if value is None:
@@ -285,9 +276,33 @@ class InputManager:
         if command == '#name':
             self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
             player.name = value.capitalize()
-            print("player name value = " + value)
             server.Server.OutputJson(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
+
+        # Player attempts a login. Check username and password against database.
+        elif command == '#login':
+            print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
+
+            # Get the username, password
+            data = value.split(' ')
+
+            username = data[0]
+            password = data[1]
+
+            print(Fore.YELLOW + "Username: " + Fore.RESET + username)
+            print(Fore.YELLOW + "Password: " + Fore.RESET + password)
+
+        elif command == '#newUser':
+            print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
+
+            # Get the username, password
+            data = value.split(' ')
+
+            username = data[0]
+            password = data[1]
+
+            print(Fore.YELLOW + "New username: " + Fore.RESET + username)
+            print(Fore.YELLOW + "New password: " + Fore.RESET + password)
 
         else:
             return "No such command found."

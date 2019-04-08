@@ -38,13 +38,13 @@ class sqlManager:
         self.cursor.execute(insertSQL, (name, entryDescription, description, north, east, south, west))
         self.connection.commit()
 
-    # THIS IS BAD. Use ? ? ? (value, value, value)
     def QueryTableByID(self, tableName, fieldToFind, ID):
 
-        self.cursor.execute("SELECT " + fieldToFind + " FROM " + tableName + " WHERE ID = " + ID)
-
-        result = self.cursor.fetchone()[0]
+        self.cursor.execute("SELECT ? FROM ? WHERE id = ?", (fieldToFind, tableName, ID,)) # Not working, probably because ? binding can't be used for table names.
+        result = self.cursor.fetchone() #[0] ?
         print("Result of query is " + result)
+
+        return result
 
 
 

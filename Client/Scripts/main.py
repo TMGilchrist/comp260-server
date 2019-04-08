@@ -34,21 +34,20 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         self.newAccountButton.clicked.connect(self.NewAccount)
 
     def Login(self):
-        # Get user input
-        # These two lines cause python to crash? Happened after implemented json. Apparently QlineEdit instead of QtextEdit fixes this.
-        username = self.usernameInput.text()
-        password = self.passwordInput.text()
+        # Get user input and strip whitespace. Doing this until I can prevent the user from entering spaces in the edit box.
+        username = self.usernameInput.text().replace(' ', '')
+        password = self.passwordInput.text().replace(' ', '')
 
-        #self.game.networkSocket.send(newInput.encode())
-
-        self.close()
+        jsonIO.JsonIO.Output(self.game.networkSocket, "#login " + username + " " + password)
 
     def NewAccount(self):
         # Get user input
-        username = self.usernameInput.text()
-        password = self.passwordInput.text()
+        username = self.usernameInput.text().replace(' ', '')
+        password = self.passwordInput.text().replace(' ', '')
 
-        pass
+        jsonIO.JsonIO.Output(self.game.networkSocket, "#newUser " + username + " " + password)
+
+        # self.close()
 
 
 # PyQT application.
@@ -94,7 +93,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             newInput = self.userInput.text().lower()
             print("User input submitted")
-            #self.game.networkSocket.send(newInput.encode())
 
             jsonIO.JsonIO.Output(self.game.networkSocket, newInput)
 
