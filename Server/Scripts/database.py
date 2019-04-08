@@ -68,8 +68,9 @@ class sqlManager:
 
         rows = self.cursor.fetchall()
 
-        for row in rows:
-            print(row)
+        for index, row in enumerate(rows):
+            rows[index] = row[0]
+            #print(rows[index])
 
         return rows
 
@@ -80,7 +81,10 @@ class sqlManager:
         rows = self.cursor.fetchall()
 
         for row in rows:
-            print(row)
+            row = row[0]
+            #print(row)
+
+        return rows
 
 
 

@@ -295,6 +295,24 @@ class InputManager:
             print(Fore.YELLOW + "Username: " + Fore.RESET + username)
             print(Fore.YELLOW + "Password: " + Fore.RESET + password)
 
+            userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
+
+            # Check if matches list is empty. This means the username has not been found.
+            if not userMatches:
+                print("Username does not exist.")
+
+            else:
+                print("Username found")
+
+                # Get correct password from the database
+                correctPassword = self.sqlManager.QueryWithFilter("users", "Password", "Username", username)
+
+                if password == correctPassword[0]:
+                    print("Logged in!")
+
+                else:
+                    print("Wrong password!")
+
         elif command == '#newUser':
             print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
 
@@ -308,11 +326,15 @@ class InputManager:
             print(Fore.YELLOW + "New password: " + Fore.RESET + password)
 
             matches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
-            #print("Username matches: " + matches)
 
             # Check if matches list is empty. This means the username is available.
             if not matches:
                 print("Success!")
+
+                # Add user to database
+                self.sqlManager.CreateUser(username, password)
+
+                # Load into game...?
 
             else:
                 print("Username already exists!")
