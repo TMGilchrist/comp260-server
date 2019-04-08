@@ -38,6 +38,7 @@ class sqlManager:
         self.cursor.execute(insertSQL, (name, entryDescription, description, north, east, south, west))
         self.connection.commit()
 
+    # THIS IS BAD. Use ? ? ? (value, value, value)
     def QueryTableByID(self, tableName, fieldToFind, ID):
 
         self.cursor.execute("SELECT " + fieldToFind + " FROM " + tableName + " WHERE ID = " + ID)

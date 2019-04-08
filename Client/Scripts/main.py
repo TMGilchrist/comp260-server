@@ -1,4 +1,4 @@
-from Scripts import game
+from Scripts import game, jsonIO
 import socket
 import time
 import sys
@@ -35,11 +35,11 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
     def Login(self):
         # Get user input
-        # These two lines cause python to crash? Happened after implemented json.
-        # username = self.usernameInput.text()
-        # password = self.passwordInput.text()
+        # These two lines cause python to crash? Happened after implemented json. Apparently QlineEdit instead of QtextEdit fixes this.
+        username = self.usernameInput.text()
+        password = self.passwordInput.text()
 
-        # self.game.networkSocket.send(newInput.encode())
+        #self.game.networkSocket.send(newInput.encode())
 
         self.close()
 
@@ -94,7 +94,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             newInput = self.userInput.text().lower()
             print("User input submitted")
-            self.game.networkSocket.send(newInput.encode())
+            #self.game.networkSocket.send(newInput.encode())
+
+            jsonIO.JsonIO.Output(self.game.networkSocket, newInput)
 
         except socket.error:
             self.textDisplayMain.append("No server.")

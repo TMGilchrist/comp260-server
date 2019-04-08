@@ -3,26 +3,14 @@ import json
 import time
 from colorama import Fore, init
 
-class Server:
-
+class JsonIO:
     seqID = 0
     packetID = "MudM"
 
     init()
 
-    @staticmethod
-    def Output(client, output):
-        # Send a string to the client.
-        try:
-            client.send(output.encode())
-            return True
-
-        except socket.error:
-            print("Client lost")
-            return False
-
     @classmethod
-    def OutputJson(cls, client, output):
+    def Output(cls, serverSocket, output):
         # Send data to client
         try:
             dataDict = {"time": time.ctime(), "message": output, "value": cls.seqID}
@@ -31,9 +19,9 @@ class Server:
 
             header = len(jsonPacket).to_bytes(2, byteorder='little')
 
-            client.send(cls.packetID.encode())
-            client.send(header)
-            client.send(jsonPacket.encode())
+            serverSocket.send(cls.packetID.encode())
+            serverSocket.send(header)
+            serverSocket.send(jsonPacket.encode())
 
             # print("Sent: " + str(dataDict["value"]))
             cls.seqID += 1
@@ -44,8 +32,5 @@ class Server:
             print(Fore.RED + "Unable to send to client." + Fore.RESET)
             print("Attempted output: " + output)
             return False
-
-    def ReceiveJson(cls, client, verbose=False):
-        pass
 
 

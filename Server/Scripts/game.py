@@ -9,6 +9,7 @@ import time
 import random
 import threading
 import sys
+import json
 from queue import *
 
 
@@ -72,8 +73,12 @@ class Game:
         # Connecting to database. Probably don't need to do create tables as it should already be made.
         self.sqlManager.ConnectToDB("../MUDdatabase.db")
         # self.sqlManager.CreateTables()
-        # self.sqlManager.CreateRoom("SouthGateApproach", "Desert is all around.", "You walk into the harsh sands of the desert.", "SouthGate")
-        self.sqlManager.QueryTableByID("dungeonRooms", "RoomName", "1")
+        # self.sqlManager.CreateRoom("SouthGate", "You enter the courtyard inside the South Gate.",
+        #                           "The towering bronze doors of the South Gate stand half open, and a steady stream of merchants and travellers wind their way through. "
+        #                          "\nThrough the gates to the South, you can see the windswept desert. \nTo the north, a road leads into the city.",
+        #                          north="SouthRoad", south="SouthGateApproach")
+
+        self.sqlManager.QueryTableByID("dungeonRooms", "Description", "2")
 
         # Create a dungeon
         self.dungeon = dungeon.Dungeon(dungeonName)
@@ -150,7 +155,7 @@ class Game:
                 self.activePlayer = self.dungeon.players[self.activeClient]
 
                 # Process user command into output.
-                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1].decode("utf-8"))
+                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1])
 
                 if serverOutput is None:
                     serverOutput = "An error has occurred that left serverOutput as NoneType."
@@ -231,13 +236,36 @@ class Game:
         print(Fore.CYAN + "Receive thread running." + Fore.RESET)
         clientIsValid = True
 
+        verboseLog = False;
+
         while clientIsValid == True:
             try:
-                # Get data from client and store as a tuple.
-                newCommand = (client, client.recv(4096))
+                # Get 4-character packet ID
+                packetID = client.recv(4)
 
-                # Add to queue
-                self.commandQueue.put(newCommand)
+                if verboseLog:
+                    print(Fore.YELLOW + "Packet Received." + Fore.RESET)
+                    print(Fore.YELLOW + "PacketID = " + Fore.RESET + packetID.decode("utf-8"))
+
+                # Check if packet ID is correct.
+                if packetID.decode("utf-8") == "MudM":
+                    # Store size of payload
+                    payloadSize = int.from_bytes(client.recv(2), 'little')
+
+                    # Grab payload data.
+                    payloadData = client.recv(payloadSize)
+
+                    # Convert data to dictionary.
+                    data = json.loads(payloadData)
+
+                    if verboseLog:
+                        print(Fore.YELLOW + "Payload size: " + Fore.RESET + str(payloadSize))
+                        print(Fore.YELLOW + "Time Sent: " + Fore.RESET + data["time"])
+                        print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
+                        print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
+
+                # Add command to queue as a tuple (client, command)
+                self.commandQueue.put((client, data["message"]))
 
             except socket.error:
                 print(Fore.RED + "Lost Client" + Fore.RESET)
