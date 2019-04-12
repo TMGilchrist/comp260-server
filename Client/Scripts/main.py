@@ -22,7 +22,16 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
 
+        #self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+        #self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
+        #self.setWindowFlag(QtCore.Qt.Dialog)
+
         self.game = game
+
+        # Setup timer
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.timerEvent)
+        self.timer.start(100)
 
         """--------------------
               Listeners
@@ -48,6 +57,22 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         jsonIO.JsonIO.Output(self.game.networkSocket, "#newUser " + username + " " + password)
 
         # self.close()
+
+    # Called each timer interval
+    def timerEvent(self):
+        # Check for messages to display
+        if self.game.messageQueue.qsize() > 0:
+            message = self.game.messageQueue.get()
+
+            # Check for successful login
+            if message == '#LoginSuccess':
+                self.timer.stop()
+                self.accept()
+
+    def closeEvent(self, event):
+        print("Dialog closing")
+        self.timer.stop()
+        #self.reject()
 
 
 # PyQT application.
@@ -80,8 +105,12 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.dialog = LoginScreen(self.game)
 
         # For Modal dialogs
-        self.dialog.exec_()
+        if self.dialog.exec_():
+            print("Accepted")
 
+        else:
+            print("not accepted")
+            self.close()
 
     # Test function to print stuff
     def PrintStuff(self):
@@ -148,6 +177,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     # Called when the user closes the application window.
     def closeEvent(self, event):
 
+        print("Client closing")
+
         self.game.networkSocket.close()
         self.game.networkSocket = None
 
@@ -156,9 +187,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if self.game.currentBackgroundThread is not None:
             self.game.currentBackgroundThread.join()
+            print("joining background thread")
 
         if self.game.currentReceiveThread is not None:
             self.game.currentReceiveThread.join()
+            print("joining receive thread")
+
+        print("client closed.")
 
 
 if __name__ == "__main__":

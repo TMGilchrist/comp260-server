@@ -265,7 +265,7 @@ class InputManager:
         value = ' '.join(splitInput)
 
         if verboseLog:
-            print(Fore.YELLOW + "Value: "  + Fore.RESET + value + "\n")
+            print(Fore.YELLOW + "Value: " + Fore.RESET + value + "\n")
 
         # Ignore any further hash commands.
         removeHash = value.split('#')
@@ -295,9 +295,9 @@ class InputManager:
             print(Fore.YELLOW + "Username: " + Fore.RESET + username)
             print(Fore.YELLOW + "Password: " + Fore.RESET + password)
 
+            # Check if username exists in database
             userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
 
-            # Check if matches list is empty. This means the username has not been found.
             if not userMatches:
                 print("Username does not exist.")
 
@@ -308,7 +308,14 @@ class InputManager:
                 correctPassword = self.sqlManager.QueryWithFilter("users", "Password", "Username", username)
 
                 if password == correctPassword[0]:
-                    print("Logged in!")
+
+                    # If the user is already logged in, throw an error
+                    if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
+                        print("This account is already logged in!")
+
+                    else:
+                        print("Logged in!")
+                        server.Server.OutputJson(playerClient, "#LoginSuccess")
 
                 else:
                     print("Wrong password!")
@@ -332,7 +339,7 @@ class InputManager:
                 print("Success!")
 
                 # Add user to database
-                self.sqlManager.CreateUser(username, password)
+                self.sqlManager.CreateUser(username, password, )
 
                 # Load into game...?
 

@@ -73,13 +73,9 @@ class Game:
         # Connecting to database. Probably don't need to do create tables as it should already be made.
         self.sqlManager.ConnectToDB("../MUDdatabase.db")
         # self.sqlManager.CreateTables()
-        # self.sqlManager.CreateRoom("SouthGate", "You enter the courtyard inside the South Gate.",
-        #                           "The towering bronze doors of the South Gate stand half open, and a steady stream of merchants and travellers wind their way through. "
-        #                          "\nThrough the gates to the South, you can see the windswept desert. \nTo the north, a road leads into the city.",
-        #                          north="SouthRoad", south="SouthGateApproach")
 
-        #self.sqlManager.QueryWithFilter("dungeonRooms", "*", "id", 1)
-        self.sqlManager.Query("rooms", "*")
+        # self.sqlManager.QueryWithFilter("dungeonRooms", "*", "id", 1)
+        # self.sqlManager.Query("rooms", "*")
 
         # Create a dungeon
         self.dungeon = dungeon.Dungeon(dungeonName)
