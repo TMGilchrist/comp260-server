@@ -299,7 +299,8 @@ class InputManager:
             userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
 
             if not userMatches:
-                print("Username does not exist.")
+                # print("Username does not exist.")
+                server.Server.OutputJson(playerClient, "#NoUser")
 
             else:
                 print("Username found")
@@ -311,14 +312,13 @@ class InputManager:
 
                     # If the user is already logged in, throw an error
                     if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                        print("This account is already logged in!")
+                        server.Server.OutputJson(playerClient, "#LoginConflict")
 
                     else:
-                        print("Logged in!")
                         server.Server.OutputJson(playerClient, "#LoginSuccess")
 
                 else:
-                    print("Wrong password!")
+                    server.Server.OutputJson(playerClient, "#WrongPass")
 
         elif command == '#newUser':
             print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
@@ -336,15 +336,16 @@ class InputManager:
 
             # Check if matches list is empty. This means the username is available.
             if not matches:
-                print("Success!")
+                #print("Success!")
 
                 # Add user to database
                 self.sqlManager.CreateUser(username, password, )
 
-                # Load into game...?
+                server.Server.OutputJson(playerClient, "#NewUserSuccess")
 
             else:
-                print("Username already exists!")
+                #print("Username already exists!")
+                server.Server.OutputJson(playerClient, "#NewUserConflict")
 
         else:
             return "No such command found."

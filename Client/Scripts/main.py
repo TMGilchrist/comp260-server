@@ -22,6 +22,8 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
 
+        self.loginMessageText.setText("")
+
         #self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         #self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         #self.setWindowFlag(QtCore.Qt.Dialog)
@@ -56,8 +58,6 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
         jsonIO.JsonIO.Output(self.game.networkSocket, "#newUser " + username + " " + password)
 
-        # self.close()
-
     # Called each timer interval
     def timerEvent(self):
         # Check for messages to display
@@ -68,6 +68,25 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
             if message == '#LoginSuccess':
                 self.timer.stop()
                 self.accept()
+
+            elif message == '#NoUser':
+                self.loginMessageText.setText("No user exists with that username.")
+
+            elif message == '#WrongPass':
+                self.loginMessageText.setText("Password is incorrect.")
+
+            elif message == '#LoginConflict':
+                self.loginMessageText.setText("This user is already registered as logged in.")
+
+            elif message == '#NewUserSuccess':
+                # Show new user message
+                pass
+
+            elif message == '#NewUserConflict':
+                self.loginMessageText.setText("An account with this username already exists.")
+
+            else:
+                pass
 
     def closeEvent(self, event):
         print("Dialog closing")
@@ -107,6 +126,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # For Modal dialogs
         if self.dialog.exec_():
             print("Accepted")
+            self.show()
 
         else:
             print("not accepted")
@@ -193,6 +213,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.game.currentReceiveThread.join()
             print("joining receive thread")
 
+        # Using this to stop the client as app_exec() not returning properly when closing login dialog otherwise.
+        # Not working
+        app.quit()
+
         print("client closed.")
 
 
@@ -209,7 +233,7 @@ if __name__ == "__main__":
 
     # Create and show qtWindow.
     window = MyApp(newGame)
-    window.show()
+    #window.show()
 
     # Event loop.
     sys.exit(app.exec_())
