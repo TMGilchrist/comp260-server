@@ -271,7 +271,6 @@ class Game:
                 clientIsValid = False
 
     # Thread that handles processing for each ai.
-
     def HandleAgentThread(self, agent):
 
         handleAgent = True

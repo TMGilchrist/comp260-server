@@ -83,8 +83,9 @@ class InputManager:
             return self.Say(player, splitInput)
 
         elif command == "inventory":
-            self.inventoryActive = True
-            return player.CheckInventory()
+            # self.inventoryActive = True
+            # return player.CheckInventory()
+            return "The inventory menu is currently disabled for the saftey of all users. This feature may or may not be fixed in the future."
 
         else:
             return "No such command - Use 'help' to display a list of commands."
@@ -198,6 +199,7 @@ class InputManager:
             else:
                 self.MessagePlayers(player, player.name + " leaves the room.", True)
 
+                # Update player's room
                 player.currentRoom = newRoom
 
                 self.MessagePlayers(player, player.name + " enters the room.", True)
@@ -250,7 +252,12 @@ class InputManager:
                 else:
                     server.Server.OutputJson(playerClient, message)
 
-    # Parse specific commands to call server functions.
+    """ 
+    Parse specific commands to call server functions.
+    
+    # : Standard command. Used to update the client interface.
+    ## : Login-screen specific commands. These are sent to the login screen to confirm/deny login/account creation.
+    """
     def ParseServerCommand(self, playerClient, player, command, splitInput):
 
         verboseLog = False
@@ -275,6 +282,10 @@ class InputManager:
         if value is None:
             return "No command entered after #"
 
+        """-------------------
+            Standard Commands
+        -------------------"""
+
         # Change player name
         if command == '#name':
             self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
@@ -282,8 +293,12 @@ class InputManager:
             server.Server.OutputJson(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
 
+        """-------------------
+            Login Commands
+        -------------------"""
+
         # Player attempts a login. Check username and password against database.
-        elif command == '#login':
+        if command == '#login':
             print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
 
             # Get the username, password
@@ -300,7 +315,7 @@ class InputManager:
 
             if not userMatches:
                 # print("Username does not exist.")
-                server.Server.OutputJson(playerClient, "#NoUser")
+                server.Server.OutputJson(playerClient, "##NoUser")
 
             else:
                 print("Username found")
@@ -312,13 +327,13 @@ class InputManager:
 
                     # If the user is already logged in, throw an error
                     if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                        server.Server.OutputJson(playerClient, "#LoginConflict")
+                        server.Server.OutputJson(playerClient, "##LoginConflict")
 
                     else:
-                        server.Server.OutputJson(playerClient, "#LoginSuccess")
+                        server.Server.OutputJson(playerClient, "##LoginSuccess")
 
                 else:
-                    server.Server.OutputJson(playerClient, "#WrongPass")
+                    server.Server.OutputJson(playerClient, "##WrongPass")
 
         elif command == '#newUser':
             print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
@@ -341,11 +356,11 @@ class InputManager:
                 # Add user to database
                 self.sqlManager.CreateUser(username, password, )
 
-                server.Server.OutputJson(playerClient, "#NewUserSuccess")
+                server.Server.OutputJson(playerClient, "##NewUserSuccess")
 
             else:
                 #print("Username already exists!")
-                server.Server.OutputJson(playerClient, "#NewUserConflict")
+                server.Server.OutputJson(playerClient, "##NewUserConflict")
 
         else:
             return "No such command found."

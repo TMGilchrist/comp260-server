@@ -37,6 +37,9 @@ class Game:
         # Queue of messages from the server
         self.messageQueue = Queue()
 
+        # Queue of messages for the login screen only
+        self.loginMessageQueue = Queue()
+
     # Thread that handles receiving messages from the server and adding them to the message queue.
     def receiveThread(self, serverSocket):
         print(Fore.CYAN + "Receive thread running. \n" + Fore.RESET)
@@ -67,8 +70,13 @@ class Game:
                     print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
                     print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
 
-                    # Add the message to to the messageQueue
-                    self.messageQueue.put(data["message"])
+                    # Add login screen commands to the loginMessageQueue
+                    if data["message"][:2] == "##":
+                        self.loginMessageQueue.put(data["message"])
+
+                    else:
+                        # Add the message to to the messageQueue
+                        self.messageQueue.put(data["message"])
 
             except socket.error:
                 self.isConnected = False
