@@ -59,6 +59,17 @@ class sqlManager:
         self.connection.commit()
 
     """------------------
+          Updates
+    ------------------"""
+
+    def Update(self, tableToUpdate, fieldToUpdate, newValue, filterField, filterValue):
+
+        sql = ("UPDATE " + tableToUpdate + " SET " + fieldToUpdate + " =?" + " WHERE " + filterField + "=?")
+
+        self.cursor.execute(sql, (newValue, filterValue,))
+        self.connection.commit()
+
+    """------------------
           Queries
     ------------------"""
 

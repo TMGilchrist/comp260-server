@@ -9,11 +9,6 @@ from queue import *
 from colorama import Fore, init
 
 
-"""
-Game class that holds important information for a game including the dungeon and the player. 
-"""
-
-
 class Game:
 
     def __init__(self, qtWindow=''):

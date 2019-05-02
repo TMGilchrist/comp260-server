@@ -200,7 +200,15 @@ class Game:
             newRecieveThread = threading.Thread(target=self.ReceiveThread, args=(newClient[0],))
             newRecieveThread.start()
 
-            # Add a new player to the dungeon.
+            """
+            Move everything below this into new function that is called when the client makes a new player character.
+            """
+
+            server.Server.OutputJson(newClient[0], "Enter a name to create new character.")
+
+            self.CreatePlayer(newClient, "Player " + str(clientCount))
+
+            """"# Add a new player to the dungeon.
             self.dungeon.AddPlayer(newClient[0], "Player " + str(clientCount))
 
             # The player associated with the new client
@@ -225,7 +233,38 @@ class Game:
             # Pre-game intro text
             intro = self.dungeon.description + self.inputManager.Look(newPlayer)
 
-            server.Server.OutputJson(newClient[0], intro)
+            server.Server.OutputJson(newClient[0], intro)"""
+
+    # Called when a client wants to create a new character.
+    def CreatePlayer(self, client, name):
+
+        # Add a new player to the dungeon.
+        self.dungeon.AddPlayer(client[0], name)
+
+        # The player associated with the new client
+        newPlayer = self.dungeon.players[client[0]]
+
+        # Send player name to the client
+        server.Server.OutputJson(client[0], "#name " + newPlayer.name + "\n")
+
+        # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
+        time.sleep(0.5)
+
+        # For all other players in the game display who has joined the game..
+        for playerClient in self.dungeon.players:
+            if self.dungeon.players[playerClient] != newPlayer:
+                server.Server.OutputJson(playerClient,
+                                         "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
+
+        # Send roomName to the client. Not very nice being here.
+        # Would be nice to do this at the beginning of the gameloop.
+        # Added a space before #room to stop the # appending to the player name for some reason.
+        server.Server.OutputJson(client[0], '#room ' + newPlayer.currentRoom)
+
+        # Pre-game intro text
+        intro = self.dungeon.description + self.inputManager.Look(newPlayer)
+
+        server.Server.OutputJson(client[0], intro)
 
     # Thread to receive input from clients.
     def ReceiveThread(self, client):

@@ -38,6 +38,7 @@ class Dungeon:
         self.startRoom = ''
 
         self.sqlManager = database.sqlManager()
+        self.sqlManager.ConnectToDB("../MUDdatabase.db")
 
     # Setup the rooms of the dungeon. Default setup for testing.
     def SetupDefaultRooms(self):
@@ -67,12 +68,13 @@ class Dungeon:
 
         # Check connection is valid
         if newRoomName != "":
-            #server.Output(player.client, "\nYou walk " + direction + "\n" + self.rooms[newRoomName].entryDescription)
+
+            # Update room in database.
+
             return self.rooms[newRoomName].name
 
         # If connection invalid, stay in currentRoom
         else:
-            #server.Output(player.client, "\nThere is nowhere to go in this direction.")
             return currentRoom
 
     # Is dungeon.players even necessary anymore?

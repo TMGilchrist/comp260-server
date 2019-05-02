@@ -286,6 +286,10 @@ class InputManager:
             Standard Commands
         -------------------"""
 
+        if command == '#logout':
+            #self.sqlManager.Update("users", "LoggedIn", "False", "Username", username)
+            pass
+
         # Change player name
         if command == '#name':
             self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
@@ -331,6 +335,9 @@ class InputManager:
 
                     else:
                         server.Server.OutputJson(playerClient, "##LoginSuccess")
+
+                        # Update login status
+                        self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
 
                 else:
                     server.Server.OutputJson(playerClient, "##WrongPass")

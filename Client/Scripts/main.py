@@ -205,6 +205,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         print("Client closing")
 
+        jsonIO.JsonIO.Output(self.game.networkSocket, "#logout")
+
         self.game.networkSocket.close()
         self.game.networkSocket = None
 
