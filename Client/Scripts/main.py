@@ -49,14 +49,14 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "#login " + username + " " + password)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##login " + username + " " + password)
 
     def NewAccount(self):
         # Get user input
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "#newUser " + username + " " + password)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + password)
 
     # Called each timer interval
     def timerEvent(self):

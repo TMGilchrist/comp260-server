@@ -47,13 +47,15 @@ class InputManager:
         init()
 
     def HandleInput(self, playerClient, player, userInput):
-        # print(Fore.BLUE + "Handle Input: " + userInput + Fore.RESET)
 
         # Split string into individual words
         splitInput = userInput.split(' ')
         command = splitInput[0]
 
-        if command[0] == '#':
+        if command[:2] == '##':
+            return self.ParseLoginComamnd(playerClient, command, splitInput)
+
+        elif command[0] == '#':
             return self.ParseServerCommand(playerClient, player, command, splitInput)
 
         if command == "help":
@@ -297,10 +299,7 @@ class InputManager:
             server.Server.OutputJson(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
 
-        """-------------------
-            Login Commands
-        -------------------"""
-
+        """
         # Player attempts a login. Check username and password against database.
         if command == '#login':
             print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
@@ -371,6 +370,120 @@ class InputManager:
 
         else:
             return "No such command found."
+        """
 
+    def ParseLoginCommand(self, playerClient, userInput, game):
+        verboseLog = False
 
+        # Split string into individual words
+        splitInput = userInput.split(' ')
+        command = splitInput[0]
 
+        print("login command called!")
+
+        if verboseLog:
+            print(Fore.YELLOW + "\nClient command received: " + Fore.RESET)
+            print(Fore.YELLOW + "Input: " + Fore.RESET + ' '.join(splitInput))
+            print(Fore.YELLOW + "Command: " + Fore.RESET + splitInput[0])
+
+        # Get the value (the input without the #command)
+        del splitInput[0]
+        value = ' '.join(splitInput)
+
+        if verboseLog:
+            print(Fore.YELLOW + "Value: " + Fore.RESET + value + "\n")
+
+        # Ignore any further hash commands.
+        removeHash = value.split('#')
+        value = removeHash[0]
+
+        # Check for  null value.
+        if value is None:
+            return "No command entered after #"
+
+        """-------------------
+            Login Commands
+        -------------------"""
+
+        # Player attempts a login. Check username and password against database.
+        if command == '##login':
+            print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
+
+            # Get the username, password
+            data = value.split(' ')
+
+            username = data[0]
+            password = data[1]
+
+            print(Fore.YELLOW + "Username: " + Fore.RESET + username)
+            print(Fore.YELLOW + "Password: " + Fore.RESET + password)
+
+            # Check if username exists in database
+            userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
+
+            if not userMatches:
+                # print("Username does not exist.")
+                server.Server.OutputJson(playerClient, "##NoUser")
+
+            else:
+                print("Username found")
+
+                # Get correct password from the database
+                correctPassword = self.sqlManager.QueryWithFilter("users", "Password", "Username", username)
+
+                if password == correctPassword[0]:
+
+                    # If the user is already logged in, throw an error
+                    if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
+                        server.Server.OutputJson(playerClient, "##LoginConflict")
+
+                    else:
+                        server.Server.OutputJson(playerClient, "##LoginSuccess")
+
+                        # Update login status
+                        self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
+
+                else:
+                    server.Server.OutputJson(playerClient, "##WrongPass")
+
+        elif command == '##newUser':
+            print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
+
+            # Get the username, password
+            data = value.split(' ')
+
+            username = data[0]
+            password = data[1]
+
+            print(Fore.YELLOW + "New username: " + Fore.RESET + username)
+            print(Fore.YELLOW + "New password: " + Fore.RESET + password)
+
+            matches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
+
+            # Check if matches list is empty. This means the username is available.
+            if not matches:
+                #print("Success!")
+
+                # Add user to database
+                self.sqlManager.CreateUser(username, password, )
+
+                server.Server.OutputJson(playerClient, "##NewUserSuccess")
+
+            else:
+                #print("Username already exists!")
+                server.Server.OutputJson(playerClient, "##NewUserConflict")
+
+        elif command == '##new':
+            #create new player character with name and add to players table
+
+            playerName = value
+
+            #self.sqlManager.CreatePlayer(playerName, currentRoom)
+            game.CreatePlayer(playerClient, playerName)
+
+        elif command == '##select':
+            #select player character with name from players table where primary key = username
+            pass
+
+        else:
+            return "No such command found."
