@@ -265,6 +265,8 @@ class Game:
         # The player associated with the new client
         newPlayer = self.dungeon.players[client]
 
+        self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, )
+
         # Send player name to the client
         server.Server.OutputJson(client, "#name " + newPlayer.name + "\n")
 
