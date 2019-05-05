@@ -84,7 +84,7 @@ class DesertCity:
         self.SouthGate = Room("SouthGate",
                               "You enter the courtyard inside the South Gate.",
                               "The towering bronze doors of the South Gate stand half open, and a steady stream of merchants and travellers wind their way through. "
-                              "\nThrough the gates to the South, you can see the windswept desert. \nTo the north, a road leads into the city.",
+                              "\nThrough the gates to the <font color=Gold>South</font>, you can see the windswept desert. \nTo the <font color=Gold>NorthM/font, a road leads into the city.",
                               items={"shield": self.gameItems.shield},
                               itemPlacement={"shield": "One of the guards has left their shield leaning against a wall."},
                               north="SouthRoad",
@@ -92,20 +92,20 @@ class DesertCity:
 
         self.SouthGateApproach = Room("SouthGateApproach",
                                       "Sand bites your face as you leave the shelter of the city walls and face the open desert.",
-                                      "The sands of the desert stretch away to the south. North, city walls stretch across the dunes. Behind them you can see sunlight gleaming off bronze-topped towers.",
+                                      "The sands of the desert stretch away to the south. <font color=Gold>North</font>, city walls stretch across the dunes. Behind them you can see sunlight gleaming off bronze-topped towers.",
                                       north="SouthGate")
 
         self.SouthRoad = Room("SouthRoad",
                               "You walk along a wide, paved road lined with tall sandstone buildings.",
                               "Merchants lead mules up the road towards the heart of the city, while busy citizens push past you. The tall buildings jostling for space on either side of the road shade you from the hot sun. "
-                              "\nTo the South, you can see the towers of the South Gate. \nNorthwards, the road continues towards the heart of the city.",
+                              "\nTo the <font color=Gold>South</font>, you can see the towers of the South Gate. \n<font color=Gold>Northwards</font>, the road continues towards the heart of the city.",
                               north="GreatPlaza",
                               south="SouthGate")
 
         self.GreatPlaza = Room("GreatPlaza",
                                "The street opens into a great plaza.",
                                "You are standing in a large square at the heart of the city. Buildings rise around you and people mill back and forth, shouting in a myriad of strange languages. In the center of the plaza is a large monument dedicated to some ancient king. "
-                               "\nTo the North, an empty road leads towards a huge building in the distance. \nWide streets run West and South out of the plaza. "
+                               "\nTo the <font color=Gold>North</font>, an empty road leads towards a huge building in the distance. \nWide streets run <font color=Gold>West</font> and <font color=Gold>South</font> out of the plaza. "
                                "\nTo the East is an archway into a covered market.",
                                north="TempleWay",
                                south="SouthRoad",
@@ -115,7 +115,7 @@ class DesertCity:
         self.Market = Room("Market",
                            "You enter a covered market.",
                            "The market is cool and dark beneath silk awnings that rustle softly. The air is thick with the smell of spices, sweat and coin. "
-                           "\nTo the West is an archway to the plaza beyond.",
+                           "\nTo the <font color=Gold>West</font> is an archway to the plaza beyond.",
                            items={"sword": self.gameItems.sword},
                            itemPlacement={"sword": "There is a sword lying on a blacksmith's market stall. A sign next to it reads: 'Free sample'"},
                            npcs={"spiceMerchant": self.npcs.spiceMerchant},

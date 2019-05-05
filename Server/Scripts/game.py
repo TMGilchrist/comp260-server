@@ -57,6 +57,9 @@ class Game:
         # Queue of commands to be processed
         self.commandQueue = Queue()
 
+        # Queue of commands to be used during login screen
+        self.loginCommandQueue = Queue()
+
         # Player/Client active during input/output handling
         self.activeClient = ''
         self.activePlayer = ''
@@ -145,6 +148,24 @@ class Game:
 
             self.clientsLock.acquire()
 
+            while self.loginCommandQueue.qsize() > 0:
+                currentCommand = self.loginCommandQueue.get()
+
+                self.activeClient = currentCommand[0]
+
+                serverOutput = self.inputManager.ParseLoginCommand(self.activeClient, currentCommand[1], self)
+
+                if serverOutput is None:
+                    serverOutput = "An error has occurred that left serverOutput as NoneType."
+
+                else:
+                    if verboseOutput is True:
+                        print(Fore.GREEN + "Sending output to client" + Fore.RESET)
+                        print(Fore.GREEN + serverOutput + Fore.RESET)
+
+                    # Send server output to client
+                    server.Server.OutputJson(currentCommand[0], serverOutput)
+
             while self.commandQueue.qsize() > 0:
                 currentCommand = self.commandQueue.get()
 
@@ -196,11 +217,19 @@ class Game:
             self.clients[newClient[0]] = 0
             self.clientsLock.release()
 
-            # Start a new recieve thread for the client
-            newRecieveThread = threading.Thread(target=self.ReceiveThread, args=(newClient[0],))
-            newRecieveThread.start()
+            # Start a new receive thread for the client
+            newReceiveThread = threading.Thread(target=self.ReceiveThread, args=(newClient[0],))
+            newReceiveThread.start()
 
-            # Add a new player to the dungeon.
+            """
+            Move everything below this into new function that is called when the client makes a new player character.
+            """
+
+            server.Server.OutputJson(newClient[0], "Enter a name to create new character.")
+
+            #self.CreatePlayer(newClient, "Player " + str(clientCount))
+
+            """"# Add a new player to the dungeon.
             self.dungeon.AddPlayer(newClient[0], "Player " + str(clientCount))
 
             # The player associated with the new client
@@ -225,7 +254,40 @@ class Game:
             # Pre-game intro text
             intro = self.dungeon.description + self.inputManager.Look(newPlayer)
 
-            server.Server.OutputJson(newClient[0], intro)
+            server.Server.OutputJson(newClient[0], intro)"""
+
+    # Called when a client wants to create a new character.
+    def CreatePlayer(self, client, name):
+
+        # Add a new player to the dungeon.
+        self.dungeon.AddPlayer(client, name)
+
+        # The player associated with the new client
+        newPlayer = self.dungeon.players[client]
+
+        self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, )
+
+        # Send player name to the client
+        server.Server.OutputJson(client, "#name " + newPlayer.name + "\n")
+
+        # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
+        time.sleep(0.5)
+
+        # For all other players in the game display who has joined the game..
+        for playerClient in self.dungeon.players:
+            if self.dungeon.players[playerClient] != newPlayer:
+                server.Server.OutputJson(playerClient,
+                                         "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
+
+        # Send roomName to the client. Not very nice being here.
+        # Would be nice to do this at the beginning of the gameloop.
+        # Added a space before #room to stop the # appending to the player name for some reason.
+        server.Server.OutputJson(client, '#room ' + newPlayer.currentRoom)
+
+        # Pre-game intro text
+        intro = self.dungeon.description + self.inputManager.Look(newPlayer)
+
+        server.Server.OutputJson(client, intro)
 
     # Thread to receive input from clients.
     def ReceiveThread(self, client):
@@ -261,8 +323,13 @@ class Game:
                         print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
                         print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
 
-                # Add command to queue as a tuple (client, command)
-                self.commandQueue.put((client, data["message"]))
+                    # Add login screen commands to the loginMessageQueue
+                    if data["message"][:2] == "##":
+                        self.loginCommandQueue.put((client, data["message"]))
+
+                    else:
+                        # Add command to queue as a tuple (client, command)
+                        self.commandQueue.put((client, data["message"]))
 
             except socket.error:
                 print(Fore.RED + "Lost Client" + Fore.RESET)
@@ -271,7 +338,6 @@ class Game:
                 clientIsValid = False
 
     # Thread that handles processing for each ai.
-
     def HandleAgentThread(self, agent):
 
         handleAgent = True

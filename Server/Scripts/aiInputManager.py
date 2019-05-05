@@ -36,11 +36,11 @@ class AiInputManager:
             return "\nThere is nowhere to go in this direction."
 
         else:
-            self.MessagePlayers(agent, "<font color=red>" + agent.name + " leaves the room, heading " + direction + ". </font>", True)
+            self.MessagePlayers(agent, "<br><font color=red>" + agent.name + " leaves the room, heading " + direction + ". </font>", True)
 
             agent.currentRoom = newRoom
 
-            self.MessagePlayers(agent, "<font color=orange>" + agent.name + " enters the room from the " + direction + ". </font>", True)
+            self.MessagePlayers(agent, "<br><font color=orange>" + agent.name + " enters the room from the " + direction + ". </font>", True)
 
             return "\n" + direction + "\n" + self.dungeon.rooms[agent.currentRoom].entryDescription
 
@@ -112,7 +112,7 @@ class AiInputManager:
 
     # Agent chooses some conversation pieces to say.
     def Say(self, agent, message):
-        self.MessagePlayers(agent, "<font color=Yellow>" + agent.name + " says \"" + message + "\"</font>")
+        self.MessagePlayers(agent, "<br><font color=Yellow>" + agent.name + " says \"" + message + "\"</font>")
 
     # Outputs a message to other players. If sameRoomOnly is set to true, the message is only sent to players
     # in the same room as the player sending the message.

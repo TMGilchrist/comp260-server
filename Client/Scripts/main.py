@@ -49,43 +49,49 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "#login " + username + " " + password)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##login " + username + " " + password)
 
     def NewAccount(self):
         # Get user input
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "#newUser " + username + " " + password)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + password)
 
     # Called each timer interval
     def timerEvent(self):
+
         # Check for messages to display
-        if self.game.messageQueue.qsize() > 0:
-            message = self.game.messageQueue.get()
+        if self.game.loginMessageQueue.qsize() > 0:
+            message = self.game.loginMessageQueue.get()
 
             # Check for successful login
-            if message == '#LoginSuccess':
+            if message == '##LoginSuccess':
+                print("Login should now proceed!")
+
+                self.loginMessageText.setText("Login success!")
                 self.timer.stop()
                 self.accept()
 
-            elif message == '#NoUser':
+            elif message == '##NoUser':
                 self.loginMessageText.setText("No user exists with that username.")
 
-            elif message == '#WrongPass':
+            elif message == '##WrongPass':
                 self.loginMessageText.setText("Password is incorrect.")
 
-            elif message == '#LoginConflict':
+            elif message == '##LoginConflict':
                 self.loginMessageText.setText("This user is already registered as logged in.")
 
-            elif message == '#NewUserSuccess':
+            elif message == '##NewUserSuccess':
                 # Show new user message
+                self.loginMessageText.setText("New user created!")
                 pass
 
-            elif message == '#NewUserConflict':
+            elif message == '##NewUserConflict':
                 self.loginMessageText.setText("An account with this username already exists.")
 
             else:
+                print("Login screen message log fallthrough: " + message)
                 pass
 
     def closeEvent(self, event):
@@ -198,6 +204,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
 
         print("Client closing")
+
+        jsonIO.JsonIO.Output(self.game.networkSocket, "#logout")
 
         self.game.networkSocket.close()
         self.game.networkSocket = None
