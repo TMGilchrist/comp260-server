@@ -138,7 +138,14 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(100)
 
+        # If the player is in the main game and should receive game-related messages.
+        self.inGame = False
+
         self.ShowLoginScreen()
+
+        self.SetLabel(self.playerNameLabel, '')
+
+        self.SetLabel(self.currentRoomLabel, '')
 
         """--------------------
               Listeners
@@ -146,6 +153,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # When enter is pressed in input box.
         self.userInput.returnPressed.connect(self.UserInputSubmit)
+
+        app.aboutToQuit.connect(self.closeEvent)
 
     # Open the login screen as a modal dialog.
     def ShowLoginScreen(self):

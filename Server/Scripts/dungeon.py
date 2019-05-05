@@ -78,9 +78,13 @@ class Dungeon:
             return currentRoom
 
     # Is dungeon.players even necessary anymore?
-    def AddPlayer(self, client, playerName):
+    def AddPlayer(self, client, playerName, currentRoom=''):
         self.playersLock.acquire()
         self.players[client] = player.Player(playerName, 10, self)
+
+        if currentRoom != '':
+            self.players[client].currentRoom = currentRoom
+
         self.playersLock.release()
 
     def RemovePlayer(self, client):

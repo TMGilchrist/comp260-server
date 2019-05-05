@@ -20,20 +20,18 @@ class sqlManager:
     ------------------"""
 
     def CreateTables(self):
-        dungeonSQL = """
-                     CREATE TABLE dungeonRooms(
-                     id integer PRIMARY KEY,
-                     RoomName text NOT NULL,
-                     EntryDescription text DEFAULT "You enter an empty room.",
-                     Description text DEFAULT "An empty room.",
-                     North text DEFAULT "",
-                     East text DEFAULT "",
-                     South text DEFAULT "",
-                     West text DEFAULT "")
-                     """
-
+        roomsSQL = ""
         cursor = self.connection.cursor()
-        cursor.execute(dungeonSQL)
+        cursor.execute(roomsSQL)
+
+        playersSQL = "CREATE TABLE players(Name text not null UNIQUE PRIMARY KEY, CurrentRoom text, User text, foreign key(CurrentRoom) references rooms(Name), foreign key(User) references users(Username))"
+        cursor = self.connection.cursor()
+        cursor.execute(playersSQL)
+
+        usersSQL = "CREATE TABLE users(Username text unique not null, Password text not null, LoggedIn bool default false, LastLoggedIn text, TimeLoggedIn Text)"
+        cursor = self.connection.cursor()
+        cursor.execute(usersSQL)
+
         self.connection.commit()
 
     """------------------
@@ -53,7 +51,7 @@ class sqlManager:
         self.connection.commit()
 
     def CreatePlayer(self, name, currentRoom, user):
-        insertSQL = "INSERT INTO users(Name, CurrentRoom, User) VALUES(?, ?, ?)"
+        insertSQL = "INSERT INTO players(Name, CurrentRoom, User) VALUES(?, ?, ?)"
 
         self.cursor.execute(insertSQL, (name, currentRoom, user))
         self.connection.commit()

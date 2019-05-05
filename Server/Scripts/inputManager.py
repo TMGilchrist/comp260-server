@@ -1,6 +1,6 @@
 from colorama import Fore, init
 from Scripts import server, database, encryption
-import bcrypt
+import sqlite3
 
 
 # from PyQt5 import QtGui
@@ -49,17 +49,17 @@ class InputManager:
         # Initialise colorama
         init()
 
-    def HandleInput(self, playerClient, player, userInput):
+    def HandleInput(self, playerClient, player, userInput, game):
 
         # Split string into individual words
         splitInput = userInput.split(' ')
         command = splitInput[0]
 
-        if command[:2] == '##':
-            return self.ParseLoginComamnd(playerClient, command, splitInput)
+        #if command[:2] == '##':
+            #return self.ParseLoginCommand(playerClient, command, splitInput)
 
-        elif command[0] == '#':
-            return self.ParseServerCommand(playerClient, player, command, splitInput)
+        if command[0] == '#':
+            return self.ParseServerCommand(playerClient, player, command, splitInput, game)
 
         if command == "help":
             return self.helpTextHTML
@@ -207,6 +207,9 @@ class InputManager:
                 # Update player's room
                 player.currentRoom = newRoom
 
+                # Change current room in database.
+                self.sqlManager.Update("Players", "CurrentRoom", newRoom, "Name", player.name)
+
                 self.MessagePlayers(player, player.name + " enters the room.", True)
 
                 # Update room label
@@ -263,7 +266,7 @@ class InputManager:
     # : Standard command. Used to update the client interface.
     ## : Login-screen specific commands. These are sent to the login screen to confirm/deny login/account creation.
     """
-    def ParseServerCommand(self, playerClient, player, command, splitInput):
+    def ParseServerCommand(self, playerClient, player, command, splitInput, game):
 
         verboseLog = False
 
@@ -292,88 +295,23 @@ class InputManager:
         -------------------"""
 
         if command == '##logout':
-            #self.sqlManager.Update("users", "LoggedIn", "False", "Username", username)
-            pass
+            print("User logged out: " + game.users[playerClient])
+            self.sqlManager.Update("users", "LoggedIn", "False", "Username", game.users[playerClient])
 
         # Change player name
         if command == '#name':
             self.MessagePlayers(player, "<font color=magenta>" + player.name + " has changed their name to " + value.capitalize() + ".</font>", False)
-            player.name = value.capitalize()
+
+            try:
+                self.sqlManager.Update("Players", "Name", value.capitalize(), "Name", player.name)
+                player.name = value.capitalize()
+
+            except sqlite3.IntegrityError as e:
+                print("SQL integrity error!")
+                return "This name is already in use as a player name!\n"
+
             server.Server.OutputJson(playerClient, "#name " + player.name)
             return "Name changed to " + player.name
-
-        """
-        # Player attempts a login. Check username and password against database.
-        if command == '#login':
-            print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
-
-            # Get the username, password
-            data = value.split(' ')
-
-            username = data[0]
-            password = data[1]
-
-            print(Fore.YELLOW + "Username: " + Fore.RESET + username)
-            print(Fore.YELLOW + "Password: " + Fore.RESET + password)
-
-            # Check if username exists in database
-            userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
-
-            if not userMatches:
-                # print("Username does not exist.")
-                server.Server.OutputJson(playerClient, "##NoUser")
-
-            else:
-                print("Username found")
-
-                # Get correct password from the database
-                correctPassword = self.sqlManager.QueryWithFilter("users", "Password", "Username", username)
-
-                if password == correctPassword[0]:
-
-                    # If the user is already logged in, throw an error
-                    if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                        server.Server.OutputJson(playerClient, "##LoginConflict")
-
-                    else:
-                        server.Server.OutputJson(playerClient, "##LoginSuccess")
-
-                        # Update login status
-                        self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
-
-                else:
-                    server.Server.OutputJson(playerClient, "##WrongPass")
-
-        elif command == '#newUser':
-            print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
-
-            # Get the username, password
-            data = value.split(' ')
-
-            username = data[0]
-            password = data[1]
-
-            print(Fore.YELLOW + "New username: " + Fore.RESET + username)
-            print(Fore.YELLOW + "New password: " + Fore.RESET + password)
-
-            matches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
-
-            # Check if matches list is empty. This means the username is available.
-            if not matches:
-                #print("Success!")
-
-                # Add user to database
-                self.sqlManager.CreateUser(username, password, )
-
-                server.Server.OutputJson(playerClient, "##NewUserSuccess")
-
-            else:
-                #print("Username already exists!")
-                server.Server.OutputJson(playerClient, "##NewUserConflict")
-
-        else:
-            return "No such command found."
-        """
 
     def ParseLoginCommand(self, playerClient, userInput, game):
         verboseLog = False
@@ -437,27 +375,6 @@ class InputManager:
                 # Send password hash/salt to client.
                 server.Server.OutputJson(playerClient, "##SaltForVerification " + correctPassword[0])
 
-                """
-                if password == correctPassword[0]:
-
-                    # If the user is already logged in, throw an error
-                    if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                        # server.Server.OutputJson(playerClient, "##LoginConflict")
-
-                        # Allowing this temporarily until log out is recorded!
-                        server.Server.OutputJson(playerClient, "##LoginSuccess")
-
-                    else:
-                        server.Server.OutputJson(playerClient, "##LoginSuccess")
-
-                        # Update login status
-                        self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
-
-                else:
-                    server.Server.OutputJson(playerClient, "##WrongPass")
-
-                """
-
         elif command == '##LoginPassVerified':
 
             print(Fore.YELLOW + "\nUser login success." + Fore.RESET)
@@ -471,16 +388,18 @@ class InputManager:
 
             # If the user is already logged in, throw an error
             if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                # server.Server.OutputJson(playerClient, "##LoginConflict")
-
-                # Allowing this temporarily until log out is recorded!
-                server.Server.OutputJson(playerClient, "##LoginSuccess")
+                server.Server.OutputJson(playerClient, "##LoginConflict")
 
             else:
                 server.Server.OutputJson(playerClient, "##LoginSuccess")
 
                 # Update login status
                 self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
+
+                # Add user to list of logged in users.
+                game.users[playerClient] = username
+
+                game.CharacterSelectScreen(playerClient)
 
         elif command == '##LoginPassRejected':
             print("Wrong password.")
@@ -517,17 +436,21 @@ class InputManager:
                 print(Fore.RED + "Account already exists!" + Fore.RESET)
                 server.Server.OutputJson(playerClient, "##NewUserConflict")
 
+        # create new player character with name and add to players table
         elif command == '##new':
-            # create new player character with name and add to players table
-
             playerName = value
-
-            # self.sqlManager.CreatePlayer(playerName, currentRoom)
             game.CreatePlayer(playerClient, playerName)
 
+        # select player character with name from players table
         elif command == '##select':
-            # select player character with name from players table where primary key = username
-            pass
+
+            characterMatches = self.sqlManager.QueryWithFilter("Players", "Name", "Name", value)
+
+            if not characterMatches:
+                return "Character not found."
+
+            else:
+                game.SelectPlayer(playerClient, value)
 
         else:
             return "No such command found."

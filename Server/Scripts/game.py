@@ -15,6 +15,7 @@ import random
 import threading
 import sys
 import json
+import sqlite3
 from queue import *
 
 
@@ -56,8 +57,14 @@ class Game:
         self.mainGameThread = ''
         self.client = client
 
-        # Dictionary of clients
+        # Dictionary of clients. (client, ?)
         self.clients = {}
+
+        # Dictionary of logged in users. (Client, username)
+        self.users = {}
+
+        # Dictionary of players in the game. (Username, playerName)
+        self.players = {}
 
         # List of lost clients
         self.lostClients = []
@@ -184,7 +191,7 @@ class Game:
                 self.activePlayer = self.dungeon.players[self.activeClient]
 
                 # Process user command into output.
-                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1])
+                serverOutput = self.inputManager.HandleInput(self.activeClient, self.activePlayer, currentCommand[1], self)
 
                 if serverOutput is None:
                     serverOutput = "An error has occurred that left serverOutput as NoneType."
@@ -199,6 +206,8 @@ class Game:
 
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
+                # Update users's login status.
+                self.sqlManager.Update("users", "LoggedIn", "False", "Username", self.users[client])
                 self.clients.pop(client)
                 self.dungeon.RemovePlayer(client)
 
@@ -235,40 +244,46 @@ class Game:
             # Send encryption key to client.
             server.Server.SetupMessage(newClient[0])
 
-            """
-            Move everything below this into new function that is called when the client makes a new player character.
-            """
+    def CharacterSelectScreen(self, client):
+        # Get all characters this user owns.
+        existingCharacters = self.sqlManager.QueryWithFilter("Players", "Name", "User", self.users[client])
 
-            server.Server.OutputJson(newClient[0], "Enter <font color=Purple>##new name </font> to create new character.")
+        server.Server.OutputJson(client, "Enter <font color=Gold>##select name </font> to play an existing character or <font color=Gold>##new name </font> to create a new character. <br>")
 
-            #self.CreatePlayer(newClient, "Player " + str(clientCount))
+        for character in existingCharacters:
+            characterLocation = self.sqlManager.QueryWithFilter("Players", "CurrentRoom", "Name", character)
+            server.Server.OutputJson(client, "<font color=Gold>" + character + ": </font>" + characterLocation[0] + "<br>")
 
-            """"# Add a new player to the dungeon.
-            self.dungeon.AddPlayer(newClient[0], "Player " + str(clientCount))
+    def SelectPlayer(self, client, character):
+        characterLocation = self.sqlManager.QueryWithFilter("Players", "CurrentRoom", "Name", character)
 
-            # The player associated with the new client
-            newPlayer = self.dungeon.players[newClient[0]]
+        # Add a new player to the dungeon.
+        self.dungeon.AddPlayer(client, character, characterLocation[0])
 
-            # Send player name to the client
-            server.Server.OutputJson(newClient[0], "#name " + newPlayer.name + "\n")
+        # The player associated with the new client
+        player = self.dungeon.players[client]
 
-            # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
-            time.sleep(0.5)
+        # Send player name to the client
+        server.Server.OutputJson(client, "#name " + player.name + "\n")
 
-            # For all other players in the game display who has joined the game..
-            for playerClient in self.dungeon.players:
-                if self.dungeon.players[playerClient] != newPlayer:
-                    server.Server.OutputJson(playerClient, "<font color=magenta>" + newPlayer.name + " has joined the game! </font>")
+        # Delay to prevent messages being appended to each other in the client receive queue. Could add delimiters.
+        time.sleep(0.5)
 
-            # Send roomName to the client. Not very nice being here.
-            # Would be nice to do this at the beginning of the gameloop.
-            # Added a space before #room to stop the # appending to the player name for some reason.
-            server.Server.OutputJson(newClient[0], '#room ' + newPlayer.currentRoom)
+        # For all other players in the game display who has joined the game..
+        for playerClient in self.dungeon.players:
+            if self.dungeon.players[playerClient] != player:
+                server.Server.OutputJson(playerClient,
+                                         "<font color=magenta>" + player.name + " has joined the game! </font>")
 
-            # Pre-game intro text
-            intro = self.dungeon.description + self.inputManager.Look(newPlayer)
+        # Send roomName to the client. Not very nice being here.
+        # Would be nice to do this at the beginning of the gameloop.
+        # Added a space before #room to stop the # appending to the player name for some reason.
+        server.Server.OutputJson(client, '#room ' + player.currentRoom)
 
-            server.Server.OutputJson(newClient[0], intro)"""
+        # Pre-game intro text
+        intro = self.dungeon.description + self.inputManager.Look(player)
+
+        server.Server.OutputJson(client, intro)
 
     # Called when a client wants to create a new character.
     def CreatePlayer(self, client, name):
@@ -279,7 +294,14 @@ class Game:
         # The player associated with the new client
         newPlayer = self.dungeon.players[client]
 
-        #self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, )
+        try:
+            # Add player to database
+            self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, self.users[client])
+
+        except sqlite3.IntegrityError as e:
+            print("SQL integrity error!")
+            server.Server.OutputJson(client, "This name is already in use as a player name!\n")
+            return
 
         # Send player name to the client
         server.Server.OutputJson(client, "#name " + newPlayer.name + "\n")
@@ -417,8 +439,15 @@ class Game:
                 print("Current Room: " + currentPlayer.currentRoom + Fore.RESET)
 
         elif input == "agents":
-            # show npc agents
-            pass
+            print(Fore.CYAN + "\nNPC's (Details):" + Fore.RESET)
+
+            for agent in self.dungeon.agents:
+
+                currentAgent = self.dungeon.agents[agent]
+
+                print(Fore.CYAN + "\n" + currentAgent.name + Fore.RESET)
+                print("Health: " + str(currentAgent.health))
+                print("Current Room: " + currentAgent.currentRoom + Fore.RESET)
 
         else:
             print("Invalid command.")
