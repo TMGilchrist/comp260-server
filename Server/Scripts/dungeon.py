@@ -38,7 +38,7 @@ class Dungeon:
         self.startRoom = ''
 
         self.sqlManager = database.sqlManager()
-        self.sqlManager.ConnectToDB("../MUDdatabase.db")
+        self.sqlManager.ConnectToDB("MUDdatabase.db")
 
     # Setup the rooms of the dungeon. Default setup for testing.
     def SetupDefaultRooms(self):
@@ -86,5 +86,12 @@ class Dungeon:
     def RemovePlayer(self, client):
         print("REMOVING PLAYER FROM DUNGEON \n")
         self.playersLock.acquire()
-        del self.players[client]
+
+        if client in self.players.keys():
+            print("Removed player from dungeon.")
+            del self.players[client]
+
+        else:
+            print("No player to remove from dungeon.")
+
         self.playersLock.release()

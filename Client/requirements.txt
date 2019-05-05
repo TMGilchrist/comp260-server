@@ -1,3 +1,5 @@
 colorama==0.4.1
 pyqt5==5.12
 pyinstaller==3.4
+bcrypt
+pycryptodome

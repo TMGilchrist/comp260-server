@@ -35,7 +35,7 @@ class Game:
         # Init colourama
         init()
 
-        self.userLocalHost = False
+        self.userLocalHost = True
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
@@ -225,7 +225,7 @@ class Game:
             Move everything below this into new function that is called when the client makes a new player character.
             """
 
-            server.Server.OutputJson(newClient[0], "Enter a name to create new character.")
+            server.Server.OutputJson(newClient[0], "Enter <font color=Purple>##new name </font> to create new character.")
 
             #self.CreatePlayer(newClient, "Player " + str(clientCount))
 
@@ -265,7 +265,7 @@ class Game:
         # The player associated with the new client
         newPlayer = self.dungeon.players[client]
 
-        self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, )
+        #self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, )
 
         # Send player name to the client
         server.Server.OutputJson(client, "#name " + newPlayer.name + "\n")
@@ -295,7 +295,7 @@ class Game:
         print(Fore.CYAN + "Receive thread running." + Fore.RESET)
         clientIsValid = True
 
-        verboseLog = False;
+        verboseLog = True;
 
         while clientIsValid == True:
             try:

@@ -1,16 +1,18 @@
-from Scripts import game, jsonIO
+from Scripts import game, jsonIO, encryption
 import socket
 import time
 import sys
 import threading
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
+import bcrypt
+
 # Get UI file and load as window.
-qtCreatorFile = "../Forms/ClientMain.ui"
+qtCreatorFile = "Forms/ClientMain.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 # Load in login screen file.
-modalDialogFile = "../Forms/loginScreen.ui"
+modalDialogFile = "Forms/loginScreen.ui"
 Ui_loginScreen, QtBaseClass = uic.loadUiType(modalDialogFile)
 
 
@@ -22,11 +24,9 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
 
-        self.loginMessageText.setText("")
+        self.encryptionManager = encryption.EncryptionManager(game.networkSocket)
 
-        #self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
-        #self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
-        #self.setWindowFlag(QtCore.Qt.Dialog)
+        self.loginMessageText.setText("")
 
         self.game = game
 
@@ -56,7 +56,23 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + password)
+        saltedHashedPassword = self.encryptionManager.SaltAndHashPassword(password)
+
+        """saltedHashedPassword = password
+
+        print("gen salt")
+        salt = bcrypt.gensalt(12)
+
+        password = password.encode('utf-8')
+
+        hashedPassword = bcrypt.hashpw(password, salt)
+        hashedPassword.decode()"""
+
+        # print("Sending salt/hashed password: " + saltedHashedPassword)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + str(saltedHashedPassword))
+
+        # Send username to see if account can be created.
+        #jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + password)
 
     # Called each timer interval
     def timerEvent(self):
@@ -85,7 +101,6 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
             elif message == '##NewUserSuccess':
                 # Show new user message
                 self.loginMessageText.setText("New user created!")
-                pass
 
             elif message == '##NewUserConflict':
                 self.loginMessageText.setText("An account with this username already exists.")
@@ -205,7 +220,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         print("Client closing")
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "#logout")
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##logout")
 
         self.game.networkSocket.close()
         self.game.networkSocket = None

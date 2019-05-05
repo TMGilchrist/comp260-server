@@ -1,5 +1,5 @@
 from colorama import Fore, init
-from Scripts import server, database
+from Scripts import server, database, encryption
 
 
 # from PyQt5 import QtGui
@@ -13,6 +13,8 @@ class InputManager:
 
         self.sqlManager = database.sqlManager()
         self.sqlManager.ConnectToDB("MUDdatabase.db")
+
+        self.encryptionManager = encryption.EncryptionManager()
 
         # Help text, should include commands and useful info.
         self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \
@@ -288,7 +290,7 @@ class InputManager:
             Standard Commands
         -------------------"""
 
-        if command == '#logout':
+        if command == '##logout':
             #self.sqlManager.Update("users", "LoggedIn", "False", "Username", username)
             pass
 
@@ -435,7 +437,10 @@ class InputManager:
 
                     # If the user is already logged in, throw an error
                     if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
-                        server.Server.OutputJson(playerClient, "##LoginConflict")
+                        # server.Server.OutputJson(playerClient, "##LoginConflict")
+
+                        # Allowing this temporarily until log out is recorded!
+                        server.Server.OutputJson(playerClient, "##LoginSuccess")
 
                     else:
                         server.Server.OutputJson(playerClient, "##LoginSuccess")
@@ -462,7 +467,10 @@ class InputManager:
 
             # Check if matches list is empty. This means the username is available.
             if not matches:
-                #print("Success!")
+                print(Fore.GREEN + "Account created!" + Fore.RESET)
+
+                #salt = self.encryptionManager.GenerateSalt()
+                # server.Server.OutputJson(playerClient, "##NewUserSalt " + salt)
 
                 # Add user to database
                 self.sqlManager.CreateUser(username, password, )
@@ -470,20 +478,23 @@ class InputManager:
                 server.Server.OutputJson(playerClient, "##NewUserSuccess")
 
             else:
-                #print("Username already exists!")
+                # print("Username already exists!")
+                print(Fore.RED + "Account already exists!" + Fore.RESET)
                 server.Server.OutputJson(playerClient, "##NewUserConflict")
 
         elif command == '##new':
-            #create new player character with name and add to players table
+            # create new player character with name and add to players table
 
             playerName = value
 
-            #self.sqlManager.CreatePlayer(playerName, currentRoom)
+            # self.sqlManager.CreatePlayer(playerName, currentRoom)
             game.CreatePlayer(playerClient, playerName)
 
         elif command == '##select':
-            #select player character with name from players table where primary key = username
+            # select player character with name from players table where primary key = username
             pass
 
         else:
             return "No such command found."
+
+

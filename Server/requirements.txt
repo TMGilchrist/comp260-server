@@ -1,3 +1,4 @@
 colorama==0.4.1
 pyinstaller==3.4
 numpy==1.16.2
+bcrypt
