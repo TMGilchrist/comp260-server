@@ -1,4 +1,5 @@
 import bcrypt
+from Scripts import jsonIO
 
 
 class EncryptionManager:
@@ -9,6 +10,8 @@ class EncryptionManager:
         self.plaintextPassword = ''
         self.salt = ''
         self.hashedPassword = ''
+
+        self.username = ''
 
         # Key used to encrypt and decrypt messages. Sent from server.
         self.encryptionKey = ''
@@ -23,10 +26,19 @@ class EncryptionManager:
         # Hash the salted password
         hashedPassword = bcrypt.hashpw(plainTextPassword, salt)
 
-        hashedPassword.decode()
+        hashedPassword = hashedPassword.decode()
 
         print("Hashed password generated.")
         return hashedPassword
+
+    def VerifyPassword(self, correctPass):
+        result = bcrypt.checkpw(self.plaintextPassword.encode('utf-8'), bytes(correctPass, 'utf-8'))
+
+        if result is True:
+            jsonIO.JsonIO.Output(self.serverSocket, "##LoginPassVerified " + self.username)
+
+        else:
+            jsonIO.JsonIO.Output(self.serverSocket, "##LoginPassRejected " + self.username)
 
     def EncryptMessage(self, message, encryptKey):
         pass

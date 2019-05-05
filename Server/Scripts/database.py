@@ -81,7 +81,7 @@ class sqlManager:
 
         for index, row in enumerate(rows):
             rows[index] = row[0]
-            #print(rows[index])
+            print(rows[index])
 
         return rows
 

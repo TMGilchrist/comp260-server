@@ -21,14 +21,11 @@ class JsonIO:
 
             header = len(jsonPacket).to_bytes(2, byteorder='little')
 
-            print("Json progress marker!!")
-
             serverSocket.send(cls.packetID.encode())
             serverSocket.send(header)
 
             serverSocket.send(jsonPacket.encode())
 
-            # print("Sent: " + str(dataDict["value"]))
             cls.seqID += 1
 
             print("Json output success.")

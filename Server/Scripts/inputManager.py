@@ -1,5 +1,6 @@
 from colorama import Fore, init
 from Scripts import server, database, encryption
+import bcrypt
 
 
 # from PyQt5 import QtGui
@@ -408,17 +409,15 @@ class InputManager:
         -------------------"""
 
         # Player attempts a login. Check username and password against database.
-        if command == '##login':
-            print(Fore.YELLOW + "\nUser login attempt." + Fore.RESET)
+        if command == '##loginRequest':
+            print(Fore.YELLOW + "\nUser login request." + Fore.RESET)
 
             # Get the username, password
             data = value.split(' ')
 
             username = data[0]
-            password = data[1]
 
             print(Fore.YELLOW + "Username: " + Fore.RESET + username)
-            print(Fore.YELLOW + "Password: " + Fore.RESET + password)
 
             # Check if username exists in database
             userMatches = self.sqlManager.QueryWithFilter("users", "Username", "Username", username)
@@ -430,9 +429,15 @@ class InputManager:
             else:
                 print("Username found")
 
-                # Get correct password from the database
+                # Get correct password from the database (this is salted and hashed)
                 correctPassword = self.sqlManager.QueryWithFilter("users", "Password", "Username", username)
 
+                print("Correct pass: " + correctPassword[0])
+
+                # Send password hash/salt to client.
+                server.Server.OutputJson(playerClient, "##SaltForVerification " + correctPassword[0])
+
+                """
                 if password == correctPassword[0]:
 
                     # If the user is already logged in, throw an error
@@ -450,6 +455,36 @@ class InputManager:
 
                 else:
                     server.Server.OutputJson(playerClient, "##WrongPass")
+
+                """
+
+        elif command == '##LoginPassVerified':
+
+            print(Fore.YELLOW + "\nUser login success." + Fore.RESET)
+
+            # Get the username, password
+            data = value.split(' ')
+
+            username = data[0]
+
+            print(Fore.YELLOW + "Username: " + Fore.RESET + username)
+
+            # If the user is already logged in, throw an error
+            if self.sqlManager.QueryWithFilter("users", "LoggedIn", "Username", username)[0] == "true":
+                # server.Server.OutputJson(playerClient, "##LoginConflict")
+
+                # Allowing this temporarily until log out is recorded!
+                server.Server.OutputJson(playerClient, "##LoginSuccess")
+
+            else:
+                server.Server.OutputJson(playerClient, "##LoginSuccess")
+
+                # Update login status
+                self.sqlManager.Update("users", "LoggedIn", 'true', "Username", username)
+
+        elif command == '##LoginPassRejected':
+            print("Wrong password.")
+            server.Server.OutputJson(playerClient, "##WrongPass")
 
         elif command == '##newUser':
             print(Fore.YELLOW + "\nUser account creation attempt." + Fore.RESET)
@@ -469,7 +504,7 @@ class InputManager:
             if not matches:
                 print(Fore.GREEN + "Account created!" + Fore.RESET)
 
-                #salt = self.encryptionManager.GenerateSalt()
+                # salt = self.encryptionManager.GenerateSalt()
                 # server.Server.OutputJson(playerClient, "##NewUserSalt " + salt)
 
                 # Add user to database

@@ -24,11 +24,11 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
 
-        self.encryptionManager = encryption.EncryptionManager(game.networkSocket)
-
         self.loginMessageText.setText("")
 
         self.game = game
+
+        self.encryptionManager = encryption.EncryptionManager(self.game.networkSocket)  # self.game.networkSocket is apparently empty here??
 
         # Setup timer
         self.timer = QtCore.QTimer()
@@ -45,11 +45,16 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         self.newAccountButton.clicked.connect(self.NewAccount)
 
     def Login(self):
+        self.encryptionManager.serverSocket = self.game.networkSocket
+
         # Get user input and strip whitespace. Doing this until I can prevent the user from entering spaces in the edit box.
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##login " + username + " " + password)
+        self.encryptionManager.plaintextPassword = password
+        self.encryptionManager.username = username
+
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##loginRequest " + username)
 
     def NewAccount(self):
         # Get user input
@@ -58,21 +63,13 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
         saltedHashedPassword = self.encryptionManager.SaltAndHashPassword(password)
 
-        """saltedHashedPassword = password
+        print("salted hash")
+        print(saltedHashedPassword)
 
-        print("gen salt")
-        salt = bcrypt.gensalt(12)
+        stringPassword = str(saltedHashedPassword)
+        #stringPassword = stringPassword.encode('utf-8')
 
-        password = password.encode('utf-8')
-
-        hashedPassword = bcrypt.hashpw(password, salt)
-        hashedPassword.decode()"""
-
-        # print("Sending salt/hashed password: " + saltedHashedPassword)
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + str(saltedHashedPassword))
-
-        # Send username to see if account can be created.
-        #jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + password)
+        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + saltedHashedPassword)
 
     # Called each timer interval
     def timerEvent(self):
@@ -81,32 +78,45 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         if self.game.loginMessageQueue.qsize() > 0:
             message = self.game.loginMessageQueue.get()
 
+            splitInput = message.split(' ')
+            command = splitInput[0]
+
+            del splitInput[0]
+            message = ' '.join(splitInput)
+
+            print("Command: " + command)
+            print("Message; " + message)
+
             # Check for successful login
-            if message == '##LoginSuccess':
+            if command == '##LoginSuccess':
                 print("Login should now proceed!")
 
                 self.loginMessageText.setText("Login success!")
                 self.timer.stop()
                 self.accept()
 
-            elif message == '##NoUser':
+            # Pass the salt to the encryption manager to verify login.
+            elif command == '##SaltForVerification':
+                self.encryptionManager.VerifyPassword(message)
+
+            elif command == '##NoUser':
                 self.loginMessageText.setText("No user exists with that username.")
 
-            elif message == '##WrongPass':
+            elif command == '##WrongPass':
                 self.loginMessageText.setText("Password is incorrect.")
 
-            elif message == '##LoginConflict':
+            elif command == '##LoginConflict':
                 self.loginMessageText.setText("This user is already registered as logged in.")
 
-            elif message == '##NewUserSuccess':
+            elif command == '##NewUserSuccess':
                 # Show new user message
                 self.loginMessageText.setText("New user created!")
 
-            elif message == '##NewUserConflict':
+            elif command == '##NewUserConflict':
                 self.loginMessageText.setText("An account with this username already exists.")
 
             else:
-                print("Login screen message log fallthrough: " + message)
+                print("Login screen message log fallthrough: " + command + ' ' + message)
                 pass
 
     def closeEvent(self, event):
