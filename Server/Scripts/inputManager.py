@@ -12,7 +12,7 @@ class InputManager:
         self.dungeon = dungeon
 
         self.sqlManager = database.sqlManager()
-        self.sqlManager.ConnectToDB("../MUDdatabase.db")
+        self.sqlManager.ConnectToDB("MUDdatabase.db")
 
         # Help text, should include commands and useful info.
         self.helpTextHTML = "<br>------------------------------------------------------------------<br>" \

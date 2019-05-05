@@ -35,7 +35,7 @@ class Game:
         # Init colourama
         init()
 
-        self.userLocalHost = True
+        self.userLocalHost = False
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
@@ -71,7 +71,7 @@ class Game:
         self.Connect()
 
         # Connecting to database. Probably don't need to do create tables as it should already be made.
-        self.sqlManager.ConnectToDB("../MUDdatabase.db")
+        self.sqlManager.ConnectToDB("MUDdatabase.db")
         # self.sqlManager.CreateTables()
 
         # self.sqlManager.QueryWithFilter("dungeonRooms", "*", "id", 1)
@@ -253,7 +253,7 @@ class Game:
                     payloadData = client.recv(payloadSize)
 
                     # Convert data to dictionary.
-                    data = json.loads(payloadData)
+                    data = json.loads(payloadData.decode("utf-8"))
 
                     if verboseLog:
                         print(Fore.YELLOW + "Payload size: " + Fore.RESET + str(payloadSize))

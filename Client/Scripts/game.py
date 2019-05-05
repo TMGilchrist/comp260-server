@@ -20,7 +20,7 @@ class Game:
         self.isConnected = False
         self.clientIsRunning = True
 
-        self.userLocalHost = True
+        self.userLocalHost = False
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
@@ -61,7 +61,7 @@ class Game:
                     payloadData = serverSocket.recv(payloadSize)
 
                     # Convert data to dictionary.
-                    data = json.loads(payloadData)
+                    data = json.loads(payloadData.decode("utf-8"))
 
                     print(Fore.YELLOW + "Time Sent: " + Fore.RESET + data["time"])
                     print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
