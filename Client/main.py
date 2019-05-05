@@ -44,6 +44,7 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
         self.newAccountButton.clicked.connect(self.NewAccount)
 
+    # Sends a login request to the sever with the user's username. The server will then respond with password verification.
     def Login(self):
         self.encryptionManager.serverSocket = self.game.networkSocket
 
@@ -56,18 +57,13 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
         jsonIO.JsonIO.Output(self.game.networkSocket, "##loginRequest " + username)
 
+    # Sends a request for a new account.
     def NewAccount(self):
         # Get user input
         username = self.usernameInput.text().replace(' ', '')
         password = self.passwordInput.text().replace(' ', '')
 
         saltedHashedPassword = self.encryptionManager.SaltAndHashPassword(password)
-
-        print("salted hash")
-        print(saltedHashedPassword)
-
-        stringPassword = str(saltedHashedPassword)
-        #stringPassword = stringPassword.encode('utf-8')
 
         jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + saltedHashedPassword)
 
@@ -119,6 +115,7 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
                 print("Login screen message log fallthrough: " + command + ' ' + message)
                 pass
 
+    # Called when the login screen closes.
     def closeEvent(self, event):
         print("Dialog closing")
         self.timer.stop()

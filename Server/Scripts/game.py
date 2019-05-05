@@ -4,6 +4,11 @@ from Scripts import aiInputManager, npcAgent, inputManager, server, dungeon, dat
 
 from colorama import Fore, init
 
+from base64 import b64decode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+from Crypto.Random import get_random_bytes
+
 import socket
 import time
 import random
@@ -31,6 +36,12 @@ class Game:
         self.aiInputManager = ''
 
         self.sqlManager = database.sqlManager()
+
+        # Key used for data encryption. Must be send to the client in an initial setup message.
+        self.encryptionKey = get_random_bytes(16)
+
+        # Pass key to server class for sending messages.
+        server.Server.encryptionKey = self.encryptionKey
 
         # Init colourama
         init()
@@ -221,6 +232,9 @@ class Game:
             newReceiveThread = threading.Thread(target=self.ReceiveThread, args=(newClient[0],))
             newReceiveThread.start()
 
+            # Send encryption key to client.
+            server.Server.SetupMessage(newClient[0])
+
             """
             Move everything below this into new function that is called when the client makes a new player character.
             """
@@ -317,19 +331,29 @@ class Game:
                     # Convert data to dictionary.
                     data = json.loads(payloadData.decode("utf-8"))
 
+                    # Decrypt data
+                    iv = b64decode(data["iv"])
+
+                    cipherText = b64decode(data["message"])
+
+                    cipher = AES.new(self.encryptionKey, AES.MODE_CBC, iv)
+
+                    decryptedMessage = unpad(cipher.decrypt(cipherText), AES.block_size)
+                    decryptedMessage = decryptedMessage.decode('utf-8')
+
                     if verboseLog:
                         print(Fore.YELLOW + "Payload size: " + Fore.RESET + str(payloadSize))
                         print(Fore.YELLOW + "Time Sent: " + Fore.RESET + data["time"])
                         print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
-                        print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
+                        print(Fore.YELLOW + "Packet message: " + Fore.RESET + decryptedMessage + "\n")
 
                     # Add login screen commands to the loginMessageQueue
-                    if data["message"][:2] == "##":
-                        self.loginCommandQueue.put((client, data["message"]))
+                    if decryptedMessage[:2] == "##":
+                        self.loginCommandQueue.put((client, decryptedMessage))
 
                     else:
                         # Add command to queue as a tuple (client, command)
-                        self.commandQueue.put((client, data["message"]))
+                        self.commandQueue.put((client, decryptedMessage))
 
             except socket.error:
                 print(Fore.RED + "Lost Client" + Fore.RESET)

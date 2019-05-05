@@ -1,9 +1,13 @@
-from Scripts import inputManager
+from Scripts import inputManager, jsonIO
 import socket
 import time
 import threading
 import sys
 import json
+
+from base64 import b64decode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 
 from queue import *
 from colorama import Fore, init
@@ -59,19 +63,49 @@ class Game:
                     payloadData = serverSocket.recv(payloadSize)
 
                     # Convert data to dictionary.
-                    data = json.loads(payloadData.decode("utf-8"))
+                    data = json.loads(payloadData) #.decode("utf-8"))
+
+                    # Decrypt data
+                    iv = b64decode(data["iv"])
+
+                    cipherText = b64decode(data["message"])
+
+                    # Convert key to bytes for use.
+                    keyAsBytes = jsonIO.JsonIO.encryptionKey.encode('utf-8')
+                    keyAsBytes = b64decode(keyAsBytes)
+
+                    cipher = AES.new(keyAsBytes, AES.MODE_CBC, iv)
+
+                    decryptedMessage = unpad(cipher.decrypt(cipherText), AES.block_size)
+                    decryptedMessage = decryptedMessage.decode('utf-8')
 
                     print(Fore.YELLOW + "Time Sent: " + Fore.RESET + data["time"])
                     print(Fore.YELLOW + "Packet sequence: " + Fore.RESET + str(data["value"]))
-                    print(Fore.YELLOW + "Packet message: " + Fore.RESET + data["message"] + "\n")
+                    print(Fore.YELLOW + "Packet message: " + Fore.RESET + decryptedMessage + "\n")
 
                     # Add login screen commands to the loginMessageQueue
-                    if data["message"][:2] == "##":
-                        self.loginMessageQueue.put(data["message"])
+                    if decryptedMessage[:2] == "##":
+                        self.loginMessageQueue.put(decryptedMessage)
 
                     else:
                         # Add the message to to the messageQueue
-                        self.messageQueue.put(data["message"])
+                        self.messageQueue.put(decryptedMessage)
+
+                elif packetID.decode("utf-8") == "Init":
+                    # Store size of payload
+                    payloadSize = int.from_bytes(serverSocket.recv(2), 'little')
+
+                    print(Fore.YELLOW + "Payload size: " + Fore.RESET + str(payloadSize))
+
+                    # Grab payload data.
+                    payloadData = serverSocket.recv(payloadSize)
+
+                    # Convert data to dictionary.
+                    data = json.loads(payloadData.decode("utf-8"))
+                    key = data["key"]
+
+                    # Store key.
+                    jsonIO.JsonIO.encryptionKey = key
 
             except socket.error:
                 self.isConnected = False
