@@ -47,7 +47,7 @@ class Game:
         # Init colourama
         init()
 
-        self.userLocalHost = True
+        self.userLocalHost = False
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
