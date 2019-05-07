@@ -4,6 +4,7 @@ import time
 import sys
 import threading
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
+from PyQt5.QtCore import QCoreApplication
 
 import bcrypt
 
@@ -23,6 +24,8 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
         QtWidgets.QDialog.__init__(self)
         Ui_loginScreen.__init__(self)
         self.setupUi(self)
+
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
 
         self.loginMessageText.setText("")
 
@@ -88,6 +91,7 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
                 print("Login should now proceed!")
 
                 self.loginMessageText.setText("Login success!")
+                self.game.loggedIn = True
                 self.timer.stop()
                 self.accept()
 
@@ -119,7 +123,10 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
     def closeEvent(self, event):
         print("Dialog closing")
         self.timer.stop()
+        #self.close()
         #self.reject()
+        self.done(0)
+        #app.quit()
 
 
 # PyQT application.
@@ -154,7 +161,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # When enter is pressed in input box.
         self.userInput.returnPressed.connect(self.UserInputSubmit)
 
-        app.aboutToQuit.connect(self.closeEvent)
+        #app.aboutToQuit.connect(self.closeEvent)
 
     # Open the login screen as a modal dialog.
     def ShowLoginScreen(self):
@@ -166,7 +173,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.show()
 
         else:
-            print("not accepted")
+            print("Not accepted")
             self.close()
 
     # Test function to print stuff
@@ -236,7 +243,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
         print("Client closing")
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##logout")
+        if self.game.loggedIn is True:
+            print("Send logout")
+            self.game.loggedIn = False
+            jsonIO.JsonIO.Output(self.game.networkSocket, "##logout")
 
         self.game.networkSocket.close()
         self.game.networkSocket = None

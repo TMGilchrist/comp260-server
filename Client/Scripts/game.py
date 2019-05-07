@@ -27,6 +27,9 @@ class Game:
         self.currentReceiveThread = ''
         self.currentBackgroundThread = ''
 
+        # If this user is logged in to the game.
+        self.loggedIn = False
+
         # Init colourama
         init()
 

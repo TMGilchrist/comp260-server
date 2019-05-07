@@ -207,7 +207,12 @@ class Game:
             # Remove lost clients from clients dictionary
             for client in self.lostClients:
                 # Update users's login status.
-                self.sqlManager.Update("users", "LoggedIn", "False", "Username", self.users[client])
+                try:
+                    self.sqlManager.Update("users", "LoggedIn", "False", "Username", self.users[client])
+
+                except KeyError:
+                    print("This client had not logged in.")
+
                 self.clients.pop(client)
                 self.dungeon.RemovePlayer(client)
 
