@@ -49,26 +49,44 @@ class LoginScreen(QtWidgets.QDialog, Ui_loginScreen):
 
     # Sends a login request to the sever with the user's username. The server will then respond with password verification.
     def Login(self):
-        self.encryptionManager.serverSocket = self.game.networkSocket
+        try:
+            self.encryptionManager.serverSocket = self.game.networkSocket
 
-        # Get user input and strip whitespace. Doing this until I can prevent the user from entering spaces in the edit box.
-        username = self.usernameInput.text().replace(' ', '')
-        password = self.passwordInput.text().replace(' ', '')
+            # Get user input and strip whitespace. Doing this until I can prevent the user from entering spaces in the edit box.
+            username = self.usernameInput.text().replace(' ', '')
+            password = self.passwordInput.text().replace(' ', '')
 
-        self.encryptionManager.plaintextPassword = password
-        self.encryptionManager.username = username
+            self.encryptionManager.plaintextPassword = password
+            self.encryptionManager.username = username
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##loginRequest " + username)
+            jsonIO.JsonIO.Output(self.game.networkSocket, "##loginRequest " + username)
+
+        except socket.error:
+            print("No server found.")
+            self.loginMessageText.setText("Could not connect to server!")
+
+        except ValueError:
+            print("No server found.")
+            self.loginMessageText.setText("Could not connect to server!")
 
     # Sends a request for a new account.
     def NewAccount(self):
-        # Get user input
-        username = self.usernameInput.text().replace(' ', '')
-        password = self.passwordInput.text().replace(' ', '')
+        try:
+            # Get user input
+            username = self.usernameInput.text().replace(' ', '')
+            password = self.passwordInput.text().replace(' ', '')
 
-        saltedHashedPassword = self.encryptionManager.SaltAndHashPassword(password)
+            saltedHashedPassword = self.encryptionManager.SaltAndHashPassword(password)
 
-        jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + saltedHashedPassword)
+            jsonIO.JsonIO.Output(self.game.networkSocket, "##newUser " + username + " " + saltedHashedPassword)
+
+        except socket.error:
+            print("No server found.")
+            self.loginMessageText.setText("Could not connect to server!")
+
+        except ValueError:
+            print("No server found.")
+            self.loginMessageText.setText("Could not connect to server!")
 
     # Called each timer interval
     def timerEvent(self):
