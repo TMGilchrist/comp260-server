@@ -47,7 +47,7 @@ class Game:
         # Init colourama
         init()
 
-        self.userLocalHost = False
+        self.userLocalHost = True
         self.serverIP = "46.101.56.200"
         self.serverPort = 9100
 
@@ -117,7 +117,7 @@ class Game:
         self.aiBuilder.SetUpAgents()
 
         # Create processing threads for each agent in the game.
-        self.CreateAgentThreads()
+        #self.CreateAgentThreads()
 
         # Start the server input thread.
         self.serverThread = threading.Thread(target=self.ServerThread)
@@ -301,7 +301,7 @@ class Game:
 
         try:
             # Add player to database
-            self.sqlManager.CreatePlayer(name, newPlayer.currentRoom, self.users[client])
+            self.sqlManager.CreatePlayer(name, self.dungeon.startRoom, self.users[client])
 
         except sqlite3.IntegrityError as e:
             print("SQL integrity error!")

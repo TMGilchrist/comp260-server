@@ -163,10 +163,21 @@ class InputManager:
         return "You drop " + itemToDrop.description
 
     def Look(self, player):
+
+        room = self.sqlManager.QueryWithFilter("players", "CurrentRoom", "Name", player.name)[0]
+
+        print("Room = " + room)
+
+        roomDescription = self.sqlManager.QueryWithFilter("rooms", "Description", "Name", room)[0]
+
+        print("Room desc = " + roomDescription)
+
+
         # Print room description
-        output = "<br><font color=magenta>You look around.</font> <br>" + self.dungeon.rooms[player.currentRoom].description
+        output = "<br><font color=magenta>You look around.</font> <br>" + roomDescription # self.dungeon.rooms[player.currentRoom].description
 
         # Check for items
+        """
         for item in self.dungeon.rooms[player.currentRoom].items:
             output = output + ("<br>" + self.dungeon.rooms[player.currentRoom].itemPlacement[item])
 
@@ -184,6 +195,8 @@ class InputManager:
             if (self.dungeon.players[playerClient].currentRoom == player.currentRoom) and (self.dungeon.players[playerClient] != player):
                 output = output + ("<br>" + self.dungeon.players[playerClient].name + " is standing nearby.")
 
+        """
+
         return output
 
     def Move(self, playerClient, player, splitInput):
@@ -194,8 +207,12 @@ class InputManager:
         moveDirection = [direction for direction in splitInput if direction in self.directions]
 
         if len(moveDirection) > 0:
+            moveDirection = moveDirection[0].capitalize()
+
+            currentRoom = self.sqlManager.QueryWithFilter("players", "CurrentRoom", "Name", player.name)[0]
+
             # Use the first direction command found and move the player.
-            newRoom = self.dungeon.Move(player.currentRoom, moveDirection[0])
+            newRoom = self.dungeon.Move(currentRoom, moveDirection)
 
             # Check if the player has actually changed rooms.
             if player.currentRoom == newRoom:
@@ -207,15 +224,16 @@ class InputManager:
                 # Update player's room
                 player.currentRoom = newRoom
 
+                print("NewRoom: " + newRoom)
                 # Change current room in database.
                 self.sqlManager.Update("Players", "CurrentRoom", newRoom, "Name", player.name)
 
                 self.MessagePlayers(player, player.name + " enters the room.", True)
 
                 # Update room label
-                server.Server.OutputJson(playerClient, '#room ' + player.currentRoom)
+                server.Server.OutputJson(playerClient, '#room ' + currentRoom)
 
-                output = "<br><font color=magenta>You walk " + moveDirection[0] + "</font> <br>" + self.dungeon.rooms[player.currentRoom].entryDescription
+                output = "<br><font color=magenta>You walk " + moveDirection + "</font> <br>" + self.sqlManager.QueryWithFilter("rooms", "EntryDescription", "Name", currentRoom)[0]
 
                 # Check for ai agents
                 for agent in self.dungeon.agents:

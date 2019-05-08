@@ -50,21 +50,48 @@ class Dungeon:
         self.startRoom = self.rooms["Entrance"].name
 
     def SetupCityRooms(self):
-        self.rooms["SouthGate"] = self.cityRooms.SouthGate
-        self.rooms["SouthGateApproach"] = self.cityRooms.SouthGateApproach
-        self.rooms["SouthRoad"] = self.cityRooms.SouthRoad
-        self.rooms["GreatPlaza"] = self.cityRooms.GreatPlaza
+        self.rooms["South Gate"] = self.cityRooms.SouthGate
+        self.rooms["South Gate Approach"] = self.cityRooms.SouthGateApproach
+        self.rooms["South Road"] = self.cityRooms.SouthRoad
+        self.rooms["Great Plaza"] = self.cityRooms.GreatPlaza
         self.rooms["Market"] = self.cityRooms.Market
-        self.rooms["TempleWay"] = self.cityRooms.TempleWay
-        self.rooms["TempleSteps"] = self.cityRooms.TempleSteps
+        self.rooms["Temple Way"] = self.cityRooms.TempleWay
+        self.rooms["Temple Steps"] = self.cityRooms.TempleSteps
         self.rooms["Temple"] = self.cityRooms.Temple
-        self.rooms["PalaceWay"] = self.cityRooms.PalaceWay
+        self.rooms["Palace Way"] = self.cityRooms.PalaceWay
 
-        self.startRoom = self.rooms["SouthGateApproach"].name
+        # Hardcoding this for now. There should be a field in the rooms table called StartingRoom
+        self.startRoom ="South Gate Approach" #"= self.rooms["SouthGateApproach"].name
 
     # Move from a room in a direction
     def Move(self, currentRoom, direction):
+        #newRoomName = self.rooms[currentRoom].connections[direction]
+
+        print("Dungeon.move")
+        print("Direction: " + direction)
+        print("CurrentRoom: " + currentRoom)
+        newRoomName = self.sqlManager.QueryWithFilter("rooms", "North", "Name", currentRoom)[0]
+
+        # Check connection is valid
+        if newRoomName != "":
+
+            # Update room in database.
+
+            #newRoom = self.sqlManager.QueryWithFilter("rooms, ")
+            #return self.rooms[newRoomName].name
+            return newRoomName
+
+        # If connection invalid, stay in currentRoom
+        else:
+            return currentRoom
+
+
+
+    # Move from a room in a direction
+    def MoveAI(self, currentRoom, direction):
         newRoomName = self.rooms[currentRoom].connections[direction]
+
+        #newRoomName = sqlManager.QueryWithFilter("rooms", direction, "Name", currentRoom)
 
         # Check connection is valid
         if newRoomName != "":
@@ -76,6 +103,8 @@ class Dungeon:
         # If connection invalid, stay in currentRoom
         else:
             return currentRoom
+
+
 
     # Is dungeon.players even necessary anymore?
     def AddPlayer(self, client, playerName, currentRoom=''):

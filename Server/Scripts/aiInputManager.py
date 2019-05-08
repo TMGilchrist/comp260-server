@@ -1,6 +1,6 @@
 from colorama import Fore, init
 import random
-from Scripts import npcAgent, server
+from Scripts import npcAgent, server, database
 import numpy
 
 import sys, os
@@ -19,6 +19,9 @@ class AiInputManager:
         # Possible movement directions in the dungeon.
         self.directions = ["north", "south", "east", "west"]
 
+        self.sqlManager = database.sqlManager()
+        self.sqlManager.ConnectToDB("MUDdatabase.db")
+
         self.conversation = npcAgent.ConversationPieces()
 
         # Initialise colorama
@@ -29,7 +32,7 @@ class AiInputManager:
     def Move(self, agent, direction):
 
         # Move to a new room
-        newRoom = self.dungeon.Move(agent.currentRoom, direction)
+        newRoom = self.dungeon.MoveAI(agent.currentRoom, direction)
 
         # Check if the player has actually changed rooms.
         if agent.currentRoom == newRoom:
